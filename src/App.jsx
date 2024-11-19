@@ -4,164 +4,117 @@ import './App.css';
 import { calcOarSpread } from './utils';
 
 function App() {
-  // Existing state variables
-  const [spread, setSpread] = useState(80);
-  const [inboard, setInboard] = useState(spread + 30); // following Purcer recommendation
-  const [outboard, setOutboard] = useState(370 - inboard); // typical C2 length
+  const [spread, setSpread] = useState(80); // in cm
+  const [inboard, setInboard] = useState(spread + 30); // in cm
+  const [outboard, setOutboard] = useState(370 - inboard); // in cm
   const [catchAngle, setCatchAngle] = useState(45);
   const [finishAngle, setFinishAngle] = useState(45);
-  const [catchLength, setCatchLength] = useState(200);
-  const [finishLength, setFinishLength] = useState(200);
+  const [catchLength, setCatchLength] = useState(200); // in cm
+  const [finishLength, setFinishLength] = useState(200); // in cm
   const [workDistance, setWorkDistance] = useState(catchLength + finishLength);
-  const [oarSpread, setOarSpread] = useState(calcOarSpread(inboard, catchAngle)); // straight line distance from Pin to handle tip
+  const [oarSpread, setOarSpread] = useState(calcOarSpread(inboard, catchAngle));
 
-  // New state for oar angle
   const [oarAngle, setOarAngle] = useState(0);
 
-  // SVG dimensions
-  const svgWidth = 800;
-  const svgHeight = 800;
+  // Conversion factor
+  const pixelsPerCm = 1;
 
-  // Hull variables
-  const hullLength = 300;
+  // SVG dimensions in cm
+  const svgWidthCm = 450;
+  const svgHeightCm = 450;
+
+  // Hull variables in cm
+  const hullLength = 325;
   const gunwaleWidth = 5;
-  const hullStartX = (svgWidth - hullLength) / 2; // Centered horizontally
+  const hullStartX = (svgWidthCm - hullLength) / 2;
   const hullEndX = hullStartX + hullLength;
 
-  // Hull positions
-  const hullYPosition = 430; // Base Y position for the first hull section
-  const hullWidth = 60; // Vertical gap between the two hull sections
+  // Hull positions in cm
+  const hullYPosition = 86;
+  const hullWidth = 30;
 
-  // Hull lines Y positions
-  const hullLine1Y = hullYPosition - gunwaleWidth; // Top line of first section
-  const hullLine2Y = hullYPosition; // Bottom line of first section
-  const hullLine3Y = hullYPosition + hullWidth; // Top line of second section
-  const hullLine4Y = hullLine3Y + gunwaleWidth; // Bottom line of second section
+  // Hull lines Y positions in cm
+  const hullLine1Y = hullYPosition - gunwaleWidth;
+  const hullLine2Y = hullYPosition;
+  const hullLine3Y = hullYPosition + hullWidth;
+  const hullLine4Y = hullLine3Y + gunwaleWidth;
 
-  // Guide lines
-  const verticalGuideLineX = svgWidth / 2;
-  const verticalGuideLineYStart = 100;
-  const verticalGuideLineYEnd = hullLine2Y + 50;
+  // Guide lines in cm
+  const verticalGuideLineX = svgWidthCm / 2;
+  const verticalGuideLineYStart = 20;
+  const verticalGuideLineYEnd = hullLine2Y + 10;
 
-  const horizontalGuideLineY = hullLine3Y - 30;
-  const horizontalGuideLineXStart = hullStartX + 50;
-  const horizontalGuideLineXEnd = hullEndX - 50;
+  const horizontalGuideLineY = hullLine3Y - 6;
+  const horizontalGuideLineXStart = hullStartX + 10;
+  const horizontalGuideLineXEnd = hullEndX - 10;
 
-  // Text positions
-  const catchTextX = horizontalGuideLineXStart;
-  const catchTextY = horizontalGuideLineY - 5;
-
-  const finishTextX = horizontalGuideLineXEnd - 130;
-  const finishTextY = catchTextY;
-
-  // Pivot point coordinates
+  // Pivot point coordinates in cm
   const pivotX = verticalGuideLineX;
-  const pivotY = hullLine1Y - 80;
+  const pivotY = hullLine1Y - 16;
 
-  // Oar image dimensions and position
-  const oarImageWidth = 500;
-  const oarImageHeight = 500;
+  // Oar image dimensions and position in cm
+  const oarImageWidth = 100;
+  const oarImageHeight = 100;
   const oarImageX = pivotX - oarImageWidth / 2;
   const oarImageY = 0;
 
-  // Calculate the handle tip position after rotation
-  // Step 1: Coordinates of the handle tip before rotation
+  // Handle tip calculations in cm
   const handleTipXBefore = oarImageX + oarImageWidth / 2;
   const handleTipYBefore = oarImageY + oarImageHeight;
 
-  // Step 2: Translate coordinates relative to the pivot
   const dx = handleTipXBefore - pivotX;
   const dy = handleTipYBefore - pivotY;
-
-  // Step 3: Convert angle to radians
   const theta = (oarAngle * Math.PI) / 180;
 
-  // Step 4: Apply rotation
+  console.log('dx * cos(theta):', dx * Math.cos(theta));
+  console.log('dy * sin(theta):', dy * Math.sin(theta));
   const dxRotated = dx * Math.cos(theta) - dy * Math.sin(theta);
   const dyRotated = dx * Math.sin(theta) + dy * Math.cos(theta);
 
-  // Step 5: Translate back to SVG coordinates
   const handleTipXAfter = dxRotated + pivotX;
   const handleTipYAfter = dyRotated + pivotY;
 
-  // Step 6: Compute horizontal distance
   const horizontalDistance = Math.abs(handleTipXAfter - pivotX).toFixed(2);
 
-  // Step 7: Decide whether it's catch length or finish length
-  let catchLengthLine = null;
-  let catchLengthPerpendicularLine = null;
-  let finishLengthLine = null;
-  let finishLengthPerpendicularLine = null;
-  let catchLengthText = null;
-  let finishLengthText = null;
+  // Helper function to convert pixels to cm
+  const pixelsToCm = (pixels) => pixels / pixelsPerCm;
 
-  if (oarAngle > 0) {
-    // Positive angle, it's catch length
-    catchLengthLine = (
+  // Decide whether it's catch length or finish length
+  let lengthLine = null;
+  let lengthPerpendicularLine = null;
+  let lengthText = null;
+
+  if (oarAngle !== 0) {
+    lengthLine = (
       <line
         x1={handleTipXAfter}
         y1={horizontalGuideLineY}
         x2={pivotX}
         y2={horizontalGuideLineY}
-        stroke="blue"
-        strokeWidth="2"
+        stroke={oarAngle > 0 ? 'blue' : 'green'}
+        strokeWidth={pixelsToCm(2)}
       />
     );
-    catchLengthPerpendicularLine = (
+    lengthPerpendicularLine = (
       <line
         x1={handleTipXAfter}
         y1={horizontalGuideLineY}
         x2={handleTipXAfter}
         y2={handleTipYAfter}
         stroke="black"
-        strokeDasharray="5,5"
+        strokeDasharray={`${pixelsToCm(5)},${pixelsToCm(5)}`}
       />
     );
-    catchLengthText = (
+    lengthText = (
       <text
         x={(handleTipXAfter + pivotX) / 2}
-        y={horizontalGuideLineY - 7}
+        y={horizontalGuideLineY - 1.4}
         fontFamily="Arial"
-        fontSize="12"
-        fill="blue"
+        fontSize={pixelsToCm(12)}
+        fill={oarAngle > 0 ? 'blue' : 'green'}
         textAnchor="middle"
       >
-        Catch Length: {horizontalDistance}
-      </text>
-    );
-  } else if (oarAngle < 0) {
-    // Negative angle, it's finish length
-    finishLengthLine = (
-      <line
-        x1={handleTipXAfter}
-        y1={horizontalGuideLineY}
-        x2={pivotX}
-        y2={horizontalGuideLineY}
-        stroke="green"
-        strokeWidth="2"
-      />
-    );
-    finishLengthPerpendicularLine = (
-      <line
-        x1={handleTipXAfter}
-        y1={horizontalGuideLineY}
-        x2={handleTipXAfter}
-        y2={handleTipYAfter}
-        stroke="black"
-        strokeDasharray="5,5"
-      />
-    );
-
-    finishLengthText = (
-      <text
-        x={(handleTipXAfter + pivotX) / 2}
-        y={horizontalGuideLineY - 7}
-        fontFamily="Arial"
-        fontSize="12"
-        fill="green"
-        textAnchor="middle"
-      >
-        Finish Length: {horizontalDistance}
+        {oarAngle > 0 ? `Catch Length: ${horizontalDistance}` : `Finish Length: ${horizontalDistance}`}
       </text>
     );
   }
@@ -184,9 +137,9 @@ function App() {
 
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width={svgWidth}
-          height={svgHeight}
-          viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+          width={svgWidthCm * pixelsPerCm}
+          height={svgHeightCm * pixelsPerCm}
+          viewBox={`0 0 ${svgWidthCm} ${svgHeightCm}`}
         >
           {/* Hull */}
           <line
@@ -195,7 +148,7 @@ function App() {
             x2={hullEndX}
             y2={hullLine1Y}
             stroke="black"
-            strokeWidth="2"
+            strokeWidth={pixelsToCm(2)}
           />
           <line
             x1={hullStartX}
@@ -203,7 +156,7 @@ function App() {
             x2={hullEndX}
             y2={hullLine2Y}
             stroke="black"
-            strokeWidth="2"
+            strokeWidth={pixelsToCm(2)}
           />
           <line
             x1={hullStartX}
@@ -211,7 +164,7 @@ function App() {
             x2={hullEndX}
             y2={hullLine3Y}
             stroke="black"
-            strokeWidth="2"
+            strokeWidth={pixelsToCm(2)}
           />
           <line
             x1={hullStartX}
@@ -219,8 +172,9 @@ function App() {
             x2={hullEndX}
             y2={hullLine4Y}
             stroke="black"
-            strokeWidth="2"
+            strokeWidth={pixelsToCm(2)}
           />
+
 
           {/* Guide Lines */}
           <line
@@ -229,7 +183,7 @@ function App() {
             x2={verticalGuideLineX}
             y2={verticalGuideLineYEnd}
             stroke="black"
-            strokeDasharray="5,5"
+            strokeDasharray={`${pixelsToCm(5)},${pixelsToCm(5)}`}
           />
           <line
             x1={horizontalGuideLineXStart}
@@ -237,19 +191,16 @@ function App() {
             x2={horizontalGuideLineXEnd}
             y2={horizontalGuideLineY}
             stroke="black"
-            strokeDasharray="5,5"
+            strokeDasharray={`${pixelsToCm(5)},${pixelsToCm(5)}`}
           />
 
-          {/* Dynamic Catch/Finish Length Lines and Text */}
-          {catchLengthLine}
-          {catchLengthPerpendicularLine}
-          {catchLengthText}
-          {finishLengthLine}
-          {finishLengthPerpendicularLine}
-          {finishLengthText}
+          {/* Dynamic Length Lines and Text */}
+          {lengthLine}
+          {lengthPerpendicularLine}
+          {lengthText}
 
           {/* Pivot point visualization */}
-          <circle cx={pivotX} cy={pivotY} r="5" fill="red" />
+          <circle cx={pivotX} cy={pivotY} r={pixelsToCm(5)} fill="red" />
 
           {/* Oar SVG with rotation around the pivot point */}
           <g transform={`rotate(${oarAngle}, ${pivotX}, ${pivotY})`}>
