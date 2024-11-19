@@ -66,8 +66,6 @@ function App() {
   const dy = handleTipYBefore - pivotY;
   const theta = (oarAngle * Math.PI) / 180;
 
-  console.log('dx * cos(theta):', dx * Math.cos(theta));
-  console.log('dy * sin(theta):', dy * Math.sin(theta));
   const dxRotated = dx * Math.cos(theta) - dy * Math.sin(theta);
   const dyRotated = dx * Math.sin(theta) + dy * Math.cos(theta);
 
