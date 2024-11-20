@@ -83,6 +83,17 @@ const LengthLines = ({
             >
                 {`Finish Length: ${horizontalDistanceFinish} cm`}
             </text>
+            { /* --- Total Work Distance --- */}
+            <text
+                x={boatToSvgX(0)}
+                y={boatToSvgY(-65)}
+                fontFamily="Arial"
+                fontSize={pixelsToCm(12)}
+                fill="black"
+                textAnchor="middle"
+            >
+                {`Total Work Distance: ${(Math.abs(horizontalDistanceCatch) + Math.abs(horizontalDistanceFinish)).toFixed(2)} cm`}
+            </text>
         </>
     );
 };

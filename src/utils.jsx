@@ -16,12 +16,10 @@ export const processOarAngle = (inboard, spread, oarlockWidth, oarlockDepth, oar
     const pivotXBoat = 0; // pivot is the origin
     const pivotYBoat = spread;
     const theta = (angle * Math.PI) / 180;
-    const oarlockOffsetX = oarlockWidth * Math.cos(theta) - oarlockDepth * Math.sin(theta);
+    const oarlockOffsetX = oarlockWidth * Math.cos(theta) + oarlockDepth * Math.sin(theta);
     const oarlockOffsetY = oarlockWidth * Math.sin(theta) + oarlockDepth * Math.cos(theta);
     
     const offsetSpread = spread + oarlockOffsetY
-    console.log("Oarlock offset X: ", oarlockOffsetX)
-    console.log("Oarlock offset Y: ", oarlockOffsetY)
     const oarImageXBoat = pivotXBoat - oarImageWidth / 2 - oarlockOffsetX;
     const oarImageYBoat = pivotYBoat - inboard;
 

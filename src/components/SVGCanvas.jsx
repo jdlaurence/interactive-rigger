@@ -48,8 +48,8 @@ const SVGCanvas = ({
   // Oar image dimensions in cm
   const oarImageWidth = 100;
   const oarImageHeight = 370; // real value
-  const oarlockWidth = 5; // distance from center of edge of oarlock
-  const oarlockDepth = 1; // 1/2 of oarlock depth 
+  const oarlockWidth = 6; // distance from center of edge of oarlock
+  const oarlockDepth = 2; // 1/2 of oarlock depth 
 
   // Compute handle positions and catch/finish lengths
   const processedCatch = processOarAngle(inboard, spread, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, catchAngle);
