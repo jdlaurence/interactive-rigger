@@ -64,8 +64,8 @@ const SVGCanvas = ({
   const horizontalDistanceFinish = processedFinish.horizontalDistance
   const handleTipXRotatedBoatFinish = processedFinish.handleTipXRotatedBoat
   const handleTipYRotatedBoatFinish = processedFinish.handleTipYRotatedBoat
-  const oarImageXBoatFinish = processedFinish.collarXBoat
-  const oarImageYBoatFinish = processedFinish.collarYBoat
+  const collarXBoatFinish = processedFinish.collarXBoat
+  const collarYBoatFinish = processedFinish.collarYBoat
 
   return (
     <svg
@@ -130,8 +130,8 @@ const SVGCanvas = ({
       {/* Catch Oar */}
       <Oar
         oarImage={oarImage}
-        oarImageXBoat={oarImageXBoatCatch}
-        oarImageYBoat={oarImageYBoatCatch} // Adjusted for SVG y-axis
+        collarXBoat={oarImageXBoatCatch}
+        collarYBoat={oarImageYBoatCatch} // Adjusted for SVG y-axis
         oarImageWidth={oarImageWidth}
         oarImageHeight={oarImageHeight}
         oarAngle={catchAngle}
@@ -145,8 +145,8 @@ const SVGCanvas = ({
       {/* Finish Oar */}
       <Oar
         oarImage={oarImage}
-        oarImageXBoat={oarImageXBoatFinish}
-        oarImageYBoat={oarImageYBoatFinish} // Adjusted for SVG y-axis
+        collarXBoat={collarXBoatFinish}
+        collarYBoat={collarYBoatFinish} // Adjusted for SVG y-axis
         oarImageWidth={oarImageWidth}
         oarImageHeight={oarImageHeight}
         oarAngle={finishAngle}

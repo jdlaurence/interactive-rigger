@@ -3,8 +3,8 @@ import React from 'react';
 
 const Oar = ({
   oarImage,
-  oarImageXBoat,
-  oarImageYBoat,
+  collarXBoat,
+  collarYBoat,
   oarImageWidth,
   oarImageHeight,
   oarAngle,
@@ -24,7 +24,7 @@ const Oar = ({
   return (
     <g
       transform={`
-        translate(${boatToSvgX(oarImageXBoat)}, ${boatToSvgY(oarImageYBoat)})
+        translate(${boatToSvgX(collarXBoat)}, ${boatToSvgY(collarYBoat)})
         rotate(${oarAngle})
       `}
     >
