@@ -1,0 +1,35 @@
+<svg
+  id="Layer_2"
+  data-name="Layer 2"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 346.43 10508.19"
+>
+  <defs>
+    <style>
+      {".cls-1 { fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 20px; }"}
+    </style>
+  </defs>
+  <title>Collar</title>
+  <g id="Collar">
+    <path
+      className="cls-1"
+      d="M 249 7264l-96.06 3.82L86 7280l1.16 58.07 60.08 7.61 196.76-.8 67.76-9-3.13-56.32L345 7264.71Z"
+      transform="translate(-75.82 8.96)"
+      style="fill: none; stroke: #000; stroke-miterlimit: 10; stroke-width: 20px;"
+    />
+    <line
+      className="cls-1"
+      x1="72.12"
+      y1="7355.46"
+      x2="268.17"
+      y2="7353.85"
+    />
+    <line
+      className="cls-1"
+      x1="77.08"
+      y1="7276.8"
+      x2="269.2"
+      y2="7273.68"
+    />
+  </g>
+</svg>

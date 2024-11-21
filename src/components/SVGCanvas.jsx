@@ -6,6 +6,7 @@ import Oar from './Oar';
 import LengthLines from './LengthLines';
 // import AngleLines from './AngleLines';
 import oarImage from '../assets/Oar.svg';
+import collarImage from '../assets/Collar.svg';
 import { processOarAngle } from '../utils';
 
 const SVGCanvas = ({
@@ -130,6 +131,7 @@ const SVGCanvas = ({
       {/* Catch Oar */}
       <Oar
         oarImage={oarImage}
+        collarImage={collarImage}
         collarXBoat={oarImageXBoatCatch}
         collarYBoat={oarImageYBoatCatch} // Adjusted for SVG y-axis
         oarImageWidth={oarImageWidth}
@@ -145,6 +147,7 @@ const SVGCanvas = ({
       {/* Finish Oar */}
       <Oar
         oarImage={oarImage}
+        collarImage={collarImage}
         collarXBoat={collarXBoatFinish}
         collarYBoat={collarYBoatFinish} // Adjusted for SVG y-axis
         oarImageWidth={oarImageWidth}

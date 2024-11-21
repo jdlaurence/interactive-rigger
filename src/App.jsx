@@ -4,14 +4,15 @@ import { Box } from '@mui/material';
 import ControlPanel from './components/ControlPanel';
 import SVGCanvas from './components/SVGCanvas';
 import './App.css';
+import { Copyright } from './components/Copyright';
 
 function App() {
   // State variables
   const [spread, setSpread] = useState(80); // in cm
   const [inboard, setInboard] = useState(114); // in cm; from our actual oars
   const [outboard, setOutboard] = useState(370 - 114); // in cm
-  const [catchAngle, setCatchAngle] = useState(45);
-  const [finishAngle, setFinishAngle] = useState(-45);
+  const [catchAngle, setCatchAngle] = useState(55);
+  const [finishAngle, setFinishAngle] = useState(-35);
   const [catchLength, setCatchLength] = useState(200); // in cm
   const [finishLength, setFinishLength] = useState(200); // in cm
   const [oarAngle, setOarAngle] = useState(0);
@@ -26,11 +27,11 @@ function App() {
   return (
     <Box
       sx={{
-        position: 'relative', // Establishes a positioning context for the ControlPanel
+        position: 'relative',
         width: '100vw',
         height: '100vh',
-        backgroundColor: '#eef2f5', // Light background color for contrast
-        overflow: 'hidden', // Prevents scrollbars from appearing
+        backgroundColor: '#eef2f5',
+        overflow: 'hidden',
       }}
     >
       {/* SVG Canvas */}
@@ -59,16 +60,16 @@ function App() {
       <Box
         sx={{
           position: 'absolute',
-          top: 4, // 16px from the top
-          left: 4, // 16px from the right
-          width: { xs: '90%', sm: '150px' }, // Responsive width
-          maxHeight: '90vh', // Prevents the panel from exceeding viewport height
-          overflowY: 'auto', // Adds scrollbar if content overflows
+          top: 4,
+          left: 4, 
+          width: "150px", 
+          maxHeight: '90vh',
+          overflowY: 'auto',
           backgroundColor: '#f9f9f9',
-          boxShadow: 3, // Adds a shadow for depth
-          borderRadius: 2, // Rounded corners
-          padding: 1, // Padding inside the panel
-          zIndex: 10, // Ensures the panel is above the SVGCanvas
+          boxShadow: 3, 
+          borderRadius: 2,
+          padding: 1, 
+          zIndex: 10, 
         }}
       >
         <ControlPanel
@@ -89,6 +90,9 @@ function App() {
           finishLength={finishLength}
           setFinishLength={setFinishLength}
         />
+      </Box>
+      <Box sx={{ position: 'absolute', bottom: 200, left: 0 }}>
+      <Copyright />
       </Box>
     </Box>
   );

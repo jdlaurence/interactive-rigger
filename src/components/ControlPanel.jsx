@@ -22,27 +22,31 @@ const ControlPanel = ({
 
       {/* Spread Text Input */}
       <div style={styles.controlGroup}>
-        <label style={styles.label}>Spread:</label>
+        <label style={styles.label}>Spread (cm):</label>
         <input
           type="number"
           value={spread}
           onChange={(e) => setSpread(Number(e.target.value))}
           style={styles.textInput}
           placeholder="Enter spread"
-          min="0"
+          min={75}
+          max={85}
+          step={.5}
         />
       </div>
 
       {/* Inboard Text Input */}
       <div style={styles.controlGroup}>
-        <label style={styles.label}>Inboard:</label>
+        <label style={styles.label}>Inboard (cm):</label>
         <input
           type="number"
           value={inboard}
           onChange={(e) => setInboard(Number(e.target.value))}
           style={styles.textInput}
           placeholder="Enter inboard"
-          min="0"
+          min={113}
+          max={118}
+          step={.5}
         />
       </div>
 
