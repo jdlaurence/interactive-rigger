@@ -1,4 +1,3 @@
-// src/components/ControlPanel.jsx
 import React from 'react';
 import { Box, TextField, Slider, Typography } from '@mui/material';
 
@@ -22,38 +21,44 @@ const ControlPanel = ({
     <Box sx={{ padding: 2 }}>
       
       {/* Spread Text Input */}
-      <div style={styles.controlGroup}>
-        <label style={styles.label}>Spread (cm):</label>
-        <input
+      <Box sx={{ marginBottom: 2 }}>
+        <TextField
+          label="Spread (cm)"
           type="number"
           value={spread}
           onChange={(e) => setSpread(Number(e.target.value))}
-          style={styles.textInput}
           placeholder="Enter spread"
-          min={75}
-          max={85}
-          step={.5}
+          inputProps={{
+            min: 75,
+            max: 85,
+            step: 0.5,
+          }}
+          fullWidth
         />
-      </div>
+      </Box>
 
       {/* Inboard Text Input */}
-      <div style={styles.controlGroup}>
-        <label style={styles.label}>Inboard (cm):</label>
-        <input
+      <Box sx={{ marginBottom: 2 }}>
+        <TextField
+          label="Inboard (cm)"
           type="number"
           value={inboard}
           onChange={(e) => setInboard(Number(e.target.value))}
-          style={styles.textInput}
           placeholder="Enter inboard"
-          min={113}
-          max={118}
-          step={.5}
+          inputProps={{
+            min: 113,
+            max: 118,
+            step: 0.5,
+          }}
+          fullWidth
         />
-      </div>
+      </Box>
 
       {/* Catch Angle Slider */}
       <Box sx={{ marginBottom: 2 }}>
-      <label style={styles.label}>Catch Angle: {catchAngle}°</label>
+        <Typography variant="body1" gutterBottom>
+          Catch Angle: {catchAngle}°
+        </Typography>
         <Slider
           value={catchAngle}
           min={0}
@@ -64,7 +69,9 @@ const ControlPanel = ({
 
       {/* Finish Angle Slider */}
       <Box sx={{ marginBottom: 2 }}>
-      <label style={styles.label}>Finish Angle: {finishAngle}°</label>
+        <Typography variant="body1" gutterBottom>
+          Finish Angle: {finishAngle}°
+        </Typography>
         <Slider
           value={finishAngle}
           min={-90}
@@ -108,32 +115,3 @@ const ControlPanel = ({
 };
 
 export default ControlPanel;
-
-const styles = {
-  controlPanel: {
-    marginBottom: '5px',
-    padding: '5px',
-    border: '1px solid #ccc',
-    borderRadius: '8px',
-    maxWidth: '200px',
-    backgroundColor: '#f9f9f9',
-  },
-  controlGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    marginBottom: '15px',
-  },
-  label: {
-    marginBottom: '5px',
-    fontSize: '14px',
-  },
-  slider: {
-    width: '100%',
-  },
-  textInput: {
-    padding: '8px',
-    fontSize: '12px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-  },
-};
