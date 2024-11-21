@@ -52,8 +52,8 @@ const SVGCanvas = ({
   const oarlockDepth = 2; // 1/2 of oarlock depth 
 
   // Compute handle positions and catch/finish lengths
-  const processedCatch = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, catchAngle);
-  const processedFinish = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, finishAngle);
+  const processedCatch = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, catchAngle);
+  const processedFinish = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, finishAngle);
 
   const horizontalDistanceCatch = processedCatch.horizontalDistance
   const handleTipXRotatedBoatCatch = processedCatch.handleTipXRotatedBoat

@@ -6,7 +6,7 @@ export const calcOarSpread = (inboard, catchAngle) => {
     return inboard * Math.cos(catchAngle * Math.PI / 180)
 }
 
-export const processOarAngle = (pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, angle) => {
+export const processOarAngle = (pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, angle) => {
     // Overall logic
     // Compute oarlock offset in terms of horizontal and vertical components
     // Note that the oarlock has a width and a depth, so we need to account for both
