@@ -41,31 +41,31 @@ const SVGCanvas = ({
   const hullStartXBoat = -hullLength / 2;
   const hullEndXBoat = hullLength / 2;
 
-  // Pivot point coordinates in boat space
+  // Pivot point (pin) coordinates in boat space
   const pivotXBoat = 0;
   const pivotYBoat = spread; // Spread cm above the seat
 
   // Oar image dimensions in cm
   const oarImageWidth = 100;
   const oarImageHeight = 370; // real value
-  const oarlockWidth = 6; // distance from center of edge of oarlock
+  const oarlockWidth = 5; // distance from center of edge of oarlock
   const oarlockDepth = 2; // 1/2 of oarlock depth 
 
   // Compute handle positions and catch/finish lengths
-  const processedCatch = processOarAngle(inboard, spread, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, catchAngle);
-  const processedFinish = processOarAngle(inboard, spread, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, finishAngle);
+  const processedCatch = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, catchAngle);
+  const processedFinish = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, oarImageWidth, oarImageHeight, finishAngle);
 
   const horizontalDistanceCatch = processedCatch.horizontalDistance
   const handleTipXRotatedBoatCatch = processedCatch.handleTipXRotatedBoat
   const handleTipYRotatedBoatCatch = processedCatch.handleTipYRotatedBoat
-  const oarImageXBoatCatch = processedCatch.oarImageXBoat
-  const oarImageYBoatCatch = processedCatch.oarImageYBoat
+  const oarImageXBoatCatch = processedCatch.collarXBoat
+  const oarImageYBoatCatch = processedCatch.collarYBoat
 
   const horizontalDistanceFinish = processedFinish.horizontalDistance
   const handleTipXRotatedBoatFinish = processedFinish.handleTipXRotatedBoat
   const handleTipYRotatedBoatFinish = processedFinish.handleTipYRotatedBoat
-  const oarImageXBoatFinish = processedFinish.oarImageXBoat
-  const oarImageYBoatFinish = processedFinish.oarImageYBoat
+  const oarImageXBoatFinish = processedFinish.collarXBoat
+  const oarImageYBoatFinish = processedFinish.collarYBoat
 
   return (
     <svg
@@ -119,11 +119,11 @@ const SVGCanvas = ({
             finishLength={finishLength}
         /> */}
 
-      {/* Pivot point visualization */}
+      {/* Pivot point (Pin) visualization */}
       <circle
         cx={boatToSvgX(pivotXBoat)}
         cy={boatToSvgY(pivotYBoat)}
-        r={pixelsToCm(5)}
+        r={pixelsToCm(3.5)}
         fill="red"
       />
 
@@ -131,7 +131,7 @@ const SVGCanvas = ({
       <Oar
         oarImage={oarImage}
         oarImageXBoat={oarImageXBoatCatch}
-        oarImageYBoat={oarImageYBoatCatch + oarImageHeight} // Adjusted for SVG y-axis
+        oarImageYBoat={oarImageYBoatCatch} // Adjusted for SVG y-axis
         oarImageWidth={oarImageWidth}
         oarImageHeight={oarImageHeight}
         oarAngle={catchAngle}
@@ -139,13 +139,14 @@ const SVGCanvas = ({
         boatToSvgY={boatToSvgY}
         pivotXBoat={pivotXBoat}
         pivotYBoat={pivotYBoat}
+        inboard={inboard}
       />
 
       {/* Finish Oar */}
       <Oar
         oarImage={oarImage}
         oarImageXBoat={oarImageXBoatFinish}
-        oarImageYBoat={oarImageYBoatFinish + oarImageHeight} // Adjusted for SVG y-axis
+        oarImageYBoat={oarImageYBoatFinish} // Adjusted for SVG y-axis
         oarImageWidth={oarImageWidth}
         oarImageHeight={oarImageHeight}
         oarAngle={finishAngle}
@@ -153,6 +154,7 @@ const SVGCanvas = ({
         boatToSvgY={boatToSvgY}
         pivotXBoat={pivotXBoat}
         pivotYBoat={pivotYBoat}
+        inboard={inboard}
       />
     </svg>
   );

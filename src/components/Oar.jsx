@@ -12,17 +12,30 @@ const Oar = ({
   boatToSvgY,
   pivotXBoat,
   pivotYBoat,
+  inboard,
 }) => {
+
+
+    // Collar point in image coordinates
+    const collarXInImage = oarImageWidth / 2;
+    const collarYInImage = oarImageHeight - inboard;
+
+    
   return (
-    <g transform={`rotate(${oarAngle}, ${boatToSvgX(pivotXBoat)}, ${boatToSvgY(pivotYBoat)})`}>
+    <g
+      transform={`
+        translate(${boatToSvgX(oarImageXBoat)}, ${boatToSvgY(oarImageYBoat)})
+        rotate(${oarAngle})
+      `}
+    >
       <image
         href={oarImage}
-        x={boatToSvgX(oarImageXBoat)}
-        y={boatToSvgY(oarImageYBoat)}
+        x={-collarXInImage}
+        y={-collarYInImage}
         width={oarImageWidth}
         height={oarImageHeight}
       />
-    </g>
+     </g>
   );
 };
 
