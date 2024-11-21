@@ -1,5 +1,6 @@
 // src/components/ControlPanel.jsx
 import React from 'react';
+import { Box, TextField, Slider, Typography } from '@mui/material';
 
 const ControlPanel = ({
   spread,
@@ -18,8 +19,8 @@ const ControlPanel = ({
   setFinishLength,
 }) => {
   return (
-    <div className="control-panel" style={styles.controlPanel}>
-
+    <Box sx={{ padding: 2 }}>
+      
       {/* Spread Text Input */}
       <div style={styles.controlGroup}>
         <label style={styles.label}>Spread (cm):</label>
@@ -51,74 +52,63 @@ const ControlPanel = ({
       </div>
 
       {/* Catch Angle Slider */}
-      <div style={styles.controlGroup}>
-        <label style={styles.label}>Catch Angle: {catchAngle}°</label>
-        <input
-          type="range"
-          min="0"
-          max="90"
+      <Box sx={{ marginBottom: 2 }}>
+      <label style={styles.label}>Catch Angle: {catchAngle}°</label>
+        <Slider
           value={catchAngle}
-          onChange={(e) => setCatchAngle(Number(e.target.value))}
-          style={styles.slider}
+          min={0}
+          max={90}
+          onChange={(e, newValue) => setCatchAngle(newValue)}
         />
-      </div>
+      </Box>
 
       {/* Finish Angle Slider */}
-      <div style={styles.controlGroup}>
-        <label style={styles.label}>Finish Angle: {finishAngle}°</label>
-        <input
-          type="range"
-          min="-90"
-          max="0"
+      <Box sx={{ marginBottom: 2 }}>
+      <label style={styles.label}>Finish Angle: {finishAngle}°</label>
+        <Slider
           value={finishAngle}
-          onChange={(e) => setFinishAngle(Number(e.target.value))}
-          style={{ ...styles.slider, transform: 'rotate(180deg)' }}
+          min={-90}
+          max={0}
+          onChange={(e, newValue) => setFinishAngle(newValue)}
         />
-      </div>
+      </Box>
 
-      {/* Optional: Additional Controls */}
-      {/* 
-      <div style={styles.controlGroup}>
-        <label style={styles.label}>Outboard:</label>
-        <input
+      {/* Optional Additional Controls */}
+      {/* Uncomment if needed
+      <Box sx={{ marginBottom: 2 }}>
+        <TextField
+          label="Outboard (cm)"
           type="number"
           value={outboard}
           onChange={(e) => setOutboard(Number(e.target.value))}
-          style={styles.textInput}
-          placeholder="Enter outboard"
-          min="0"
+          fullWidth
         />
-      </div>
-
-      <div style={styles.controlGroup}>
-        <label style={styles.label}>Catch Length:</label>
-        <input
+      </Box>
+      <Box sx={{ marginBottom: 2 }}>
+        <TextField
+          label="Catch Length (cm)"
           type="number"
           value={catchLength}
           onChange={(e) => setCatchLength(Number(e.target.value))}
-          style={styles.textInput}
-          placeholder="Enter catch length"
-          min="0"
+          fullWidth
         />
-      </div>
-
-      <div style={styles.controlGroup}>
-        <label style={styles.label}>Finish Length:</label>
-        <input
+      </Box>
+      <Box sx={{ marginBottom: 2 }}>
+        <TextField
+          label="Finish Length (cm)"
           type="number"
           value={finishLength}
           onChange={(e) => setFinishLength(Number(e.target.value))}
-          style={styles.textInput}
-          placeholder="Enter finish length"
-          min="0"
+          fullWidth
         />
-      </div>
+      </Box>
       */}
-    </div>
+    </Box>
   );
 };
 
-// Inline styles for simplicity; consider using CSS or styled-components for larger projects
+export default ControlPanel;
+
 const styles = {
   controlPanel: {
     marginBottom: '5px',
@@ -135,8 +125,7 @@ const styles = {
   },
   label: {
     marginBottom: '5px',
-    fontWeight: 'bold',
-    fontSize: '12px',
+    fontSize: '14px',
   },
   slider: {
     width: '100%',
@@ -148,5 +137,3 @@ const styles = {
     border: '1px solid #ccc',
   },
 };
-
-export default ControlPanel;

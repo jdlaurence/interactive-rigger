@@ -1,10 +1,9 @@
-// src/components/SVGCanvas.js
+// src/components/SVGCanvas.jsx
 import React from 'react';
 import Hull from './Hull';
 import GuideLines from './GuideLines';
 import Oar from './Oar';
 import LengthLines from './LengthLines';
-// import AngleLines from './AngleLines';
 import oarImage from '../assets/Oar.svg';
 import collarImage from '../assets/Collar.svg';
 import { processOarAngle } from '../utils';
@@ -71,8 +70,8 @@ const SVGCanvas = ({
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width={cmToPixels(svgWidthCm)}
-      height={cmToPixels(svgHeightCm)}
+      width="100%"
+      height="100%"
       viewBox={`0 0 ${svgWidthCm} ${svgHeightCm}`}
     >
       {/* Hull */}

@@ -1,10 +1,9 @@
-// src/App.js
+// src/App.jsx
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, AppBar, Toolbar } from '@mui/material';
 import ControlPanel from './components/ControlPanel';
 import SVGCanvas from './components/SVGCanvas';
-import './App.css';
-import { Copyright } from './components/Copyright';
+import { SiteHeader } from './components/SiteHeader';
 
 function App() {
   // State variables
@@ -18,7 +17,7 @@ function App() {
   const [oarAngle, setOarAngle] = useState(0);
 
   // Conversion factor
-  const pixelsPerCm = 1;
+  const pixelsPerCm = 1; 
 
   // SVG dimensions in cm
   const svgWidthCm = 500;
@@ -27,72 +26,81 @@ function App() {
   return (
     <Box
       sx={{
-        position: 'relative',
-        width: '100vw',
-        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
         backgroundColor: '#eef2f5',
-        overflow: 'hidden',
       }}
     >
-      {/* SVG Canvas */}
-      <Box
-        sx={{
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#ffffff',
-        }}
-      >
-        <SVGCanvas
-          spread={spread}
-          inboard={inboard}
-          outboard={outboard}
-          catchAngle={catchAngle}
-          finishAngle={finishAngle}
-          catchLength={catchLength}
-          finishLength={finishLength}
-          pixelsPerCm={pixelsPerCm}
-          svgWidthCm={svgWidthCm}
-          svgHeightCm={svgHeightCm}
-        />
-      </Box>
+      {/* Header */}
+      <AppBar position="static">
+        <Toolbar>
+          <SiteHeader />
+        </Toolbar>
+      </AppBar>
 
-      {/* Control Panel */}
+      {/* Main Content */}
       <Box
         sx={{
-          position: 'absolute',
-          top: 4,
-          left: 4, 
-          width: "150px", 
-          maxHeight: '90vh',
-          overflowY: 'auto',
-          backgroundColor: '#f9f9f9',
-          boxShadow: 3, 
-          borderRadius: 2,
-          padding: 1, 
-          zIndex: 10, 
+          display: 'flex',
+          flexGrow: 1,
+          overflow: 'hidden',
         }}
       >
-        <ControlPanel
-          oarAngle={oarAngle}
-          setOarAngle={setOarAngle}
-          spread={spread}
-          setSpread={setSpread}
-          inboard={inboard}
-          setInboard={setInboard}
-          outboard={outboard}
-          setOutboard={setOutboard}
-          catchAngle={catchAngle}
-          setCatchAngle={setCatchAngle}
-          finishAngle={finishAngle}
-          setFinishAngle={setFinishAngle}
-          catchLength={catchLength}
-          setCatchLength={setCatchLength}
-          finishLength={finishLength}
-          setFinishLength={setFinishLength}
-        />
-      </Box>
-      <Box sx={{ position: 'absolute', bottom: 200, left: 0 }}>
-      <Copyright />
+        {/* Control Panel */}
+        <Box
+          sx={{
+            width: 200,
+            maxHeight: '100%',
+            overflowY: 'auto',
+            backgroundColor: '#f9f9f9',
+            boxShadow: 3,
+            padding: 2,
+          }}
+        >
+          <ControlPanel
+            oarAngle={oarAngle}
+            setOarAngle={setOarAngle}
+            spread={spread}
+            setSpread={setSpread}
+            inboard={inboard}
+            setInboard={setInboard}
+            outboard={outboard}
+            setOutboard={setOutboard}
+            catchAngle={catchAngle}
+            setCatchAngle={setCatchAngle}
+            finishAngle={finishAngle}
+            setFinishAngle={setFinishAngle}
+            catchLength={catchLength}
+            setCatchLength={setCatchLength}
+            finishLength={finishLength}
+            setFinishLength={setFinishLength}
+          />
+        </Box>
+
+        {/* SVG Canvas */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            width: '700px',
+            height: '100%',
+            overflowY: 'auto',
+            backgroundColor: '#ffffff',
+          }}
+        >
+          <SVGCanvas
+            spread={spread}
+            inboard={inboard}
+            outboard={outboard}
+            catchAngle={catchAngle}
+            finishAngle={finishAngle}
+            catchLength={catchLength}
+            finishLength={finishLength}
+            pixelsPerCm={pixelsPerCm}
+            svgWidthCm={svgWidthCm}
+            svgHeightCm={svgHeightCm}
+          />
+        </Box>
       </Box>
     </Box>
   );
