@@ -11,8 +11,6 @@ const Oar = ({
   oarAngle,
   boatToSvgX,
   boatToSvgY,
-  pivotXBoat,
-  pivotYBoat,
   inboard,
 }) => {
   // Collar point in image coordinates

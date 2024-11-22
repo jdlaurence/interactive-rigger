@@ -7,6 +7,7 @@ import LengthLines from './LengthLines';
 import oarImage from '../assets/Oar.svg';
 import collarImage from '../assets/Collar.svg';
 import { processOarAngle } from '../utils';
+import Oarlock from './Oarlock';
 
 const SVGCanvas = ({
   spread,
@@ -119,12 +120,24 @@ const SVGCanvas = ({
             finishLength={finishLength}
         /> */}
 
-      {/* Pivot point (Pin) visualization */}
-      <circle
+      {/* Catch Oarlock */}
+      <Oarlock
         cx={boatToSvgX(pivotXBoat)}
         cy={boatToSvgY(pivotYBoat)}
-        r={pixelsToCm(3.5)}
-        fill="red"
+        angle={catchAngle}
+        rectWidth={cmToPixels(oarlockWidth*2)}
+        rectHeight={cmToPixels(oarlockDepth*2)}
+        circleRadius={cmToPixels(oarlockDepth*1.2)}
+      />
+
+      {/* Finish Oarlock */}
+      <Oarlock
+        cx={boatToSvgX(pivotXBoat)}
+        cy={boatToSvgY(pivotYBoat)}
+        angle={finishAngle}
+        rectWidth={cmToPixels(oarlockWidth*2)}
+        rectHeight={cmToPixels(oarlockDepth*2)}
+        circleRadius={cmToPixels(oarlockDepth*1.2)}
       />
 
       {/* Catch Oar */}
@@ -138,8 +151,6 @@ const SVGCanvas = ({
         oarAngle={catchAngle}
         boatToSvgX={boatToSvgX}
         boatToSvgY={boatToSvgY}
-        pivotXBoat={pivotXBoat}
-        pivotYBoat={pivotYBoat}
         inboard={inboard}
       />
 
@@ -154,8 +165,6 @@ const SVGCanvas = ({
         oarAngle={finishAngle}
         boatToSvgX={boatToSvgX}
         boatToSvgY={boatToSvgY}
-        pivotXBoat={pivotXBoat}
-        pivotYBoat={pivotYBoat}
         inboard={inboard}
       />
     </svg>

@@ -92,7 +92,7 @@ const LengthLines = ({
                 fill="black"
                 textAnchor="middle"
             >
-                {`Total Work Distance: ${(Math.abs(horizontalDistanceCatch) + Math.abs(horizontalDistanceFinish)).toFixed(2)} cm`}
+                {`Work Distance: ${(Math.abs(horizontalDistanceCatch) + Math.abs(horizontalDistanceFinish)).toFixed(2)} cm`}
             </text>
         </>
     );
