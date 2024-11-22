@@ -34,14 +34,14 @@ export const SiteHeader = () => {
         <Typography
           variant="subtitle2"
           component="h2"
-          sx={{ fontWeight: 300, color: 'grey.400', mt: 0.5 }}
+          sx={{ fontWeight: 300, color: 'grey.300', mt: 0.5 }}
         >
           Explore rigging adjustments to a sweep rowing shell. Improvements coming soon.
         </Typography>
         <Typography
           variant="caption"
           component="p"
-          sx={{ fontWeight: 300, color: 'grey.400', mt: 1 }}
+          sx={{ fontWeight: 300, color: 'grey.300', mt: 1 }}
         >
           © 2024 J.D. Laurence-Chasen. All rights reserved.
         </Typography>

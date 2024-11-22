@@ -119,7 +119,7 @@ const SVGCanvas = ({
             finishLength={finishLength}
         /> */}
 
-      {/* Pivot point (Pin) visualization */}
+      {/* Pivot point (Pin)  and oarlockvisualization */}
       <circle
         cx={boatToSvgX(pivotXBoat)}
         cy={boatToSvgY(pivotYBoat)}
@@ -138,8 +138,6 @@ const SVGCanvas = ({
         oarAngle={catchAngle}
         boatToSvgX={boatToSvgX}
         boatToSvgY={boatToSvgY}
-        pivotXBoat={pivotXBoat}
-        pivotYBoat={pivotYBoat}
         inboard={inboard}
       />
 
@@ -154,8 +152,6 @@ const SVGCanvas = ({
         oarAngle={finishAngle}
         boatToSvgX={boatToSvgX}
         boatToSvgY={boatToSvgY}
-        pivotXBoat={pivotXBoat}
-        pivotYBoat={pivotYBoat}
         inboard={inboard}
       />
     </svg>
