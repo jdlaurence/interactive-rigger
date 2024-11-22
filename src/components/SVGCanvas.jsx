@@ -21,52 +21,74 @@ const SVGCanvas = ({
   svgWidthCm,
   svgHeightCm,
 }) => {
-  // Helper functions
+  // **Helper functions to convert between pixels and centimeters**
   const pixelsToCm = (pixels) => pixels / pixelsPerCm;
   const cmToPixels = (cm) => cm * pixelsPerCm;
 
-  // SVG dimensions
+  // **SVG origin coordinates (center of the canvas)**
   const originX = svgWidthCm / 2;
   const originY = svgHeightCm / 2;
 
-  // Conversion functions from boat space to SVG space
-  const boatToSvgX = (x) => originX + x;
-  const boatToSvgY = (y) => originY - y;
+  // **Conversion functions from boat coordinate space to SVG coordinate space**
+  const boatToSvgX = (x) => originX + x; // SVG x-axis increases to the right
+  const boatToSvgY = (y) => originY - y; // SVG y-axis increases downward, so subtract y
 
-  // Hull variables in cm
+  // **Hull dimensions in centimeters**
   const hullLength = 325;
   const gunwaleWidth = 5;
   const hullWidth = 40;
 
-  // Hull positions in boat space
-  const hullStartXBoat = -hullLength / 2;
-  const hullEndXBoat = hullLength / 2;
+  // **Hull positions in boat coordinate space**
+  const hullStartXBoat = -hullLength / 2; // Stern position
+  const hullEndXBoat = hullLength / 2;    // Bow position
 
-  // Pivot point (pin) coordinates in boat space
+  // **Pin coordinates in boat coordinate space**
   const pivotXBoat = 0;
-  const pivotYBoat = spread; // Spread cm above the seat
+  const pivotYBoat = spread; // Distance from centerline to oarlock
 
-  // Oar image dimensions in cm
+  // **Oar image dimensions in centimeters**
   const oarImageWidth = 100;
-  const oarImageHeight = 370; // real value
-  const oarlockWidth = 5; // distance from center of edge of oarlock
-  const oarlockDepth = 2; // 1/2 of oarlock depth 
+  const oarImageHeight = 370;
 
-  // Compute handle positions and catch/finish lengths
-  const processedCatch = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, catchAngle);
-  const processedFinish = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, finishAngle);
+  // **Oarlock dimensions in cm**
+  const oarlockWidth = 5; // Distance from pin to center of oar shaft
+  const oarlockDepth = 2; // Half of oarlock depth
 
-  const horizontalDistanceCatch = processedCatch.horizontalDistance
-  const handleTipXRotatedBoatCatch = processedCatch.handleTipXRotatedBoat
-  const handleTipYRotatedBoatCatch = processedCatch.handleTipYRotatedBoat
-  const oarImageXBoatCatch = processedCatch.collarXBoat
-  const oarImageYBoatCatch = processedCatch.collarYBoat
+  // **Compute handle positions and horizontal distances at catch and finish angles**
+  const processedCatch = processOarAngle(
+    pivotXBoat,
+    pivotYBoat,
+    inboard,
+    oarlockWidth,
+    oarlockDepth,
+    catchAngle
+  );
+  const processedFinish = processOarAngle(
+    pivotXBoat,
+    pivotYBoat,
+    inboard,
+    oarlockWidth,
+    oarlockDepth,
+    finishAngle
+  );
 
-  const horizontalDistanceFinish = processedFinish.horizontalDistance
-  const handleTipXRotatedBoatFinish = processedFinish.handleTipXRotatedBoat
-  const handleTipYRotatedBoatFinish = processedFinish.handleTipYRotatedBoat
-  const collarXBoatFinish = processedFinish.collarXBoat
-  const collarYBoatFinish = processedFinish.collarYBoat
+  // **Extract data for catch position**
+  const {
+    horizontalDistance: horizontalDistanceCatch,
+    handleTipXRotatedBoat: handleTipXRotatedBoatCatch,
+    handleTipYRotatedBoat: handleTipYRotatedBoatCatch,
+    collarXBoat: oarImageXBoatCatch,
+    collarYBoat: oarImageYBoatCatch,
+  } = processedCatch;
+
+  // **Extract data for finish position**
+  const {
+    horizontalDistance: horizontalDistanceFinish,
+    handleTipXRotatedBoat: handleTipXRotatedBoatFinish,
+    handleTipYRotatedBoat: handleTipYRotatedBoatFinish,
+    collarXBoat: collarXBoatFinish,
+    collarYBoat: collarYBoatFinish,
+  } = processedFinish;
 
   return (
     <svg
@@ -75,7 +97,7 @@ const SVGCanvas = ({
       height="100%"
       viewBox={`0 0 ${svgWidthCm} ${svgHeightCm}`}
     >
-      {/* Hull */}
+      {/* Render the boat hull */}
       <Hull
         hullStartXBoat={hullStartXBoat}
         hullEndXBoat={hullEndXBoat}
@@ -86,66 +108,52 @@ const SVGCanvas = ({
         pixelsToCm={pixelsToCm}
       />
 
-      {/* Guide Lines */}
+      {/* Render guide lines for reference */}
       <GuideLines
         boatToSvgX={boatToSvgX}
         boatToSvgY={boatToSvgY}
         pixelsToCm={pixelsToCm}
       />
 
-      {/* Dynamic Length Lines and Text */}
-        <LengthLines
-          horizontalDistanceCatch={horizontalDistanceCatch.toFixed(2)}
-          horizontalDistanceFinish={horizontalDistanceFinish.toFixed(2)}
-          handleTipXRotatedBoatCatch={handleTipXRotatedBoatCatch}
-          handleTipYRotatedBoatCatch={handleTipYRotatedBoatCatch}
-          handleTipXRotatedBoatFinish={handleTipXRotatedBoatFinish}
-          handleTipYRotatedBoatFinish={handleTipYRotatedBoatFinish}
-          pixelsToCm={pixelsToCm}
-          boatToSvgX={boatToSvgX}
-          boatToSvgY={boatToSvgY}
-        />
-      {/* Dynamic Angle Lines */}
-        {/* <AngleLines
-            boatToSvgX={boatToSvgX}
-            boatToSvgY={boatToSvgY}
-            pixelsToCm={pixelsToCm}
-            pivotXBoat={pivotXBoat}
-            pivotYBoat={pivotYBoat}
-            catchAngle={catchAngle}
-            finishAngle={finishAngle}
-            handleTipXRotatedBoat={handleTipXRotatedBoat}
-            handleTipYRotatedBoat={handleTipYRotatedBoat}
-            catchLength={catchLength}
-            finishLength={finishLength}
-        /> */}
+      {/* Render dynamic length lines and labels */}
+      <LengthLines
+        horizontalDistanceCatch={horizontalDistanceCatch.toFixed(2)}
+        horizontalDistanceFinish={horizontalDistanceFinish.toFixed(2)}
+        handleTipXRotatedBoatCatch={handleTipXRotatedBoatCatch}
+        handleTipYRotatedBoatCatch={handleTipYRotatedBoatCatch}
+        handleTipXRotatedBoatFinish={handleTipXRotatedBoatFinish}
+        handleTipYRotatedBoatFinish={handleTipYRotatedBoatFinish}
+        pixelsToCm={pixelsToCm}
+        boatToSvgX={boatToSvgX}
+        boatToSvgY={boatToSvgY}
+      />
 
-      {/* Catch Oarlock */}
+      {/* Render oarlock at catch position */}
       <Oarlock
         cx={boatToSvgX(pivotXBoat)}
         cy={boatToSvgY(pivotYBoat)}
         angle={catchAngle}
-        rectWidth={cmToPixels(oarlockWidth*2)}
-        rectHeight={cmToPixels(oarlockDepth*2)}
-        circleRadius={cmToPixels(oarlockDepth*1.2)}
+        rectWidth={cmToPixels(oarlockWidth * 2)}
+        rectHeight={cmToPixels(oarlockDepth * 2)}
+        circleRadius={cmToPixels(oarlockDepth * 1.2)}
       />
 
-      {/* Finish Oarlock */}
+      {/* Render oarlock at finish position */}
       <Oarlock
         cx={boatToSvgX(pivotXBoat)}
         cy={boatToSvgY(pivotYBoat)}
         angle={finishAngle}
-        rectWidth={cmToPixels(oarlockWidth*2)}
-        rectHeight={cmToPixels(oarlockDepth*2)}
-        circleRadius={cmToPixels(oarlockDepth*1.2)}
+        rectWidth={cmToPixels(oarlockWidth * 2)}
+        rectHeight={cmToPixels(oarlockDepth * 2)}
+        circleRadius={cmToPixels(oarlockDepth * 1.2)}
       />
 
-      {/* Catch Oar */}
+      {/* Render oar at catch position */}
       <Oar
         oarImage={oarImage}
         collarImage={collarImage}
         collarXBoat={oarImageXBoatCatch}
-        collarYBoat={oarImageYBoatCatch} // Adjusted for SVG y-axis
+        collarYBoat={oarImageYBoatCatch}
         oarImageWidth={oarImageWidth}
         oarImageHeight={oarImageHeight}
         oarAngle={catchAngle}
@@ -154,12 +162,12 @@ const SVGCanvas = ({
         inboard={inboard}
       />
 
-      {/* Finish Oar */}
+      {/* Render oar at finish position */}
       <Oar
         oarImage={oarImage}
         collarImage={collarImage}
         collarXBoat={collarXBoatFinish}
-        collarYBoat={collarYBoatFinish} // Adjusted for SVG y-axis
+        collarYBoat={collarYBoatFinish}
         oarImageWidth={oarImageWidth}
         oarImageHeight={oarImageHeight}
         oarAngle={finishAngle}
