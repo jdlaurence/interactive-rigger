@@ -73,6 +73,14 @@ const ControlPanel = ({
         />
       </Box>
 
+      {/* Display Catch and Finish lengths */}
+      <Typography variant="body2">
+        Catch Length: {-catchLength} cm
+      </Typography>
+      <Typography variant="body2">
+        Finish Length: {finishLength} cm
+      </Typography>
+
       {/* Optional Additional Controls */}
       {/* Uncomment if needed
       <Box sx={{ marginBottom: 2 }}>

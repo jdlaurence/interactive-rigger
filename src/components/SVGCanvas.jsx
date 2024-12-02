@@ -16,7 +16,9 @@ const SVGCanvas = ({
   catchAngle,
   finishAngle,
   catchLength,
+  setCatchLength,
   finishLength,
+  setFinishLength,
   pixelsPerCm,
   svgWidthCm,
   svgHeightCm,
@@ -80,6 +82,7 @@ const SVGCanvas = ({
     collarXBoat: oarImageXBoatCatch,
     collarYBoat: oarImageYBoatCatch,
   } = processedCatch;
+  
 
   // **Extract data for finish position**
   const {
@@ -89,6 +92,10 @@ const SVGCanvas = ({
     collarXBoat: collarXBoatFinish,
     collarYBoat: collarYBoatFinish,
   } = processedFinish;
+
+  // Update catchLength and finishLegth when angles change
+  setCatchLength(horizontalDistanceCatch.toFixed(2));
+  setFinishLength(horizontalDistanceFinish.toFixed(2));
 
   return (
     <svg

@@ -12,8 +12,8 @@ function App() {
   const [outboard, setOutboard] = useState(370 - 114); // Length from collar to blade tip
   const [catchAngle, setCatchAngle] = useState(55); // Oar angle at catch position (degrees)
   const [finishAngle, setFinishAngle] = useState(-35); // Oar angle at finish position (degrees)
-  const [catchLength, setCatchLength] = useState(200); // Horizontal distance from pin to handle tip at catch
-  const [finishLength, setFinishLength] = useState(200); // Horizontal distance from pin to handle tip at finish
+  const [catchLength, setCatchLength] = useState(80); // Horizontal distance from pin to handle tip at catch
+  const [finishLength, setFinishLength] = useState(80); // Horizontal distance from pin to handle tip at finish
 
   // **Conversion factor for scaling**
   const pixelsPerCm = 1; // 1 pixel per centimeter
@@ -117,7 +117,9 @@ function App() {
             catchAngle={catchAngle}
             finishAngle={finishAngle}
             catchLength={catchLength}
+            setCatchLength={setCatchLength}
             finishLength={finishLength}
+            setFinishLength={setFinishLength}
             pixelsPerCm={pixelsPerCm}
             svgWidthCm={svgWidthCm}
             svgHeightCm={svgHeightCm}
