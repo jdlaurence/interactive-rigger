@@ -33,12 +33,12 @@ export const BOAT_CLASSES = {
 // Centimeters of inboard added per CLAM (collar shifted toward the blade).
 export const CLAM_CM = 1;
 
-// Half-width of the "Balanced" load-ratio window (so the band is ~0.03 wide).
+// Half-width of the "Balanced" load-ratio window (so the band is ~0.02 wide).
 // The window is centred on each preset's own (boat-adjusted) load ratio, so a
 // recommended rig always reads Balanced and a manual change of more than this
-// much tips it Light or Heavy. In custom mode the fixed 2.23–2.26 window below
+// much tips it Light or Heavy. In custom mode the fixed 2.235–2.255 window below
 // is used instead.
-export const GEARING_HALF_WIDTH = 0.015;
+export const GEARING_HALF_WIDTH = 0.01;
 
 // Each crew preset carries a full starting rig for an *eight*; applyPreset()
 // then adds CLAMs for smaller boats.
@@ -55,7 +55,7 @@ export const CREW_PRESETS = {
     grip: 32,
     arcTarget: [85, 90], // Bechard women int–elite (87–90)
     notes:
-      'Lighter, developing athletes competing at a high level. A short, light gear on a full, well-covered arc.',
+      'A neutral-to-light gear on a full, well-covered arc.',
     tips: [
       'Keep the load honest: over-gearing junior crews shortens the stroke and rushes the recovery — length and rhythm first.',
       'Inboard tracks spread + 30 cm; a slimmer grip suits smaller hands and a cleaner outside-hand feather.',
@@ -75,7 +75,7 @@ export const CREW_PRESETS = {
     grip: 34.5,
     arcTarget: [89, 94], // Bechard men int–elite (91–95)
     notes:
-      'Developing athletes across a wide range of sizes, competing at a high level. A moderate-to-firm gear over a large arc.',
+      'A moderate-to-firm gear over a large arc.',
     tips: [
       'Confirm the catch is connected before adding load — the bigger the catch angle, the heavier the effective gearing.',
       'Resist over-gearing across a wide range of sizes: a load the whole crew holds for a full piece beats a heavy gear that collapses the back half.',
@@ -95,7 +95,7 @@ export const CREW_PRESETS = {
     grip: 34.5,
     arcTarget: [88, 93], // Bechard women elite (~90)
     notes:
-      'Elite, full-size athletes. Championship women’s crews typically run a relatively short oar on a big, well-covered arc.',
+      'A relatively short oar on a big, well-covered arc.',
     tips: [
       'A larger catch angle adds effective load — make sure the catch is connected, not just reached.',
       'Standard gate height ~18.5 cm; raise slightly only for the tallest athletes.',
@@ -114,7 +114,7 @@ export const CREW_PRESETS = {
     grip: 37,
     arcTarget: [92, 97], // Bechard men elite (~95)
     notes:
-      'Elite, full-size athletes carrying the heaviest gear and the largest arc.',
+      'Heaviest gear and the largest arc.',
     tips: [
       'Heaviest gearing of the presets — confirm the crew holds the load and rate over a full 2k before going heavier.',
       'Taller athletes often need a higher gate (~19 cm) to clear the knees and finish cleanly.',
@@ -149,7 +149,7 @@ export const DEFAULT_RANGES = {
   spread: [82, 88],
   inboard: [112, 118],
   totalLength: [360, 380],
-  loadRatio: [2.23, 2.26],
+  loadRatio: [2.235, 2.255],
   totalArc: [86, 94],
   oarlockHeight: [14, 22],
 };
