@@ -2,100 +2,142 @@
 import React from 'react';
 
 const LengthLines = ({
-    horizontalDistanceCatch,
-    horizontalDistanceFinish,
-    handleTipXRotatedBoatCatch,
-    handleTipYRotatedBoatCatch,
-    handleTipXRotatedBoatFinish,
-    handleTipYRotatedBoatFinish,
-    pixelsToCm,
-    boatToSvgX,
-    boatToSvgY,
+  horizontalDistanceCatch,
+  horizontalDistanceFinish,
+  handleTipXRotatedBoatCatch,
+  handleTipYRotatedBoatCatch,
+  handleTipXRotatedBoatFinish,
+  handleTipYRotatedBoatFinish,
+  workDistance,
+  pixelsToCm,
+  boatToSvgX,
+  boatToSvgY,
 }) => {
 
+    // Pushed lower (more negative boat-y → further below the hull on screen) so
+    // the labels clear the boat artwork.
+    const catchTextYPosition = boatToSvgY(-48);
+    const finishTextYPosition = boatToSvgY(-63);
+    const workTextYPosition = boatToSvgY(-78);
+    
+  return (
+    <>
+      {/* --- Catch Length Lines and Text --- */}
 
-    return (
-        <>
-            {/* --- Catch Length Lines and Text --- */}
+      {/* Horizontal line from handle tip to pivot at catch position (white
+          halo underneath so it reads where it crosses the dark hull) */}
+      <line
+        x1={boatToSvgX(handleTipXRotatedBoatCatch)}
+        y1={boatToSvgY(0)}
+        x2={boatToSvgX(0)}
+        y2={boatToSvgY(0)}
+        stroke="#ffffff"
+        strokeOpacity={0.85}
+        strokeWidth={pixelsToCm(4)}
+        strokeLinecap="round"
+      />
+      <line
+        x1={boatToSvgX(handleTipXRotatedBoatCatch)}
+        y1={boatToSvgY(0)} // Pivot point y-coordinate
+        x2={boatToSvgX(0)}
+        y2={boatToSvgY(0)}
+        stroke="#1565c0"
+        strokeWidth={pixelsToCm(2)}
+        strokeLinecap="round"
+      />
 
-            {/* Length Line Catch */}
-            <line
-                x1={boatToSvgX(handleTipXRotatedBoatCatch)}
-                y1={boatToSvgY(0)}
-                x2={boatToSvgX(0)}
-                y2={boatToSvgY(0)}
-                stroke="blue"
-                strokeWidth={pixelsToCm(2)}
-            />
+      {/* Vertical dashed line from handle tip to horizontal line at catch position */}
+      <line
+        x1={boatToSvgX(handleTipXRotatedBoatCatch)}
+        y1={boatToSvgY(0)}
+        x2={boatToSvgX(handleTipXRotatedBoatCatch)}
+        y2={boatToSvgY(handleTipYRotatedBoatCatch)}
+        stroke="#7a8893"
+        strokeDasharray={`${pixelsToCm(5)},${pixelsToCm(5)}`}
+      />
 
-            {/* Perpendicular Length Line Catch */}
-            <line
-                x1={boatToSvgX(handleTipXRotatedBoatCatch)}
-                y1={boatToSvgY(0)}
-                x2={boatToSvgX(handleTipXRotatedBoatCatch)}
-                y2={boatToSvgY(handleTipYRotatedBoatCatch)}
-                stroke="black"
-                strokeDasharray={`${pixelsToCm(5)},${pixelsToCm(5)}`}
-            />
+      {/* Label for catch length */}
+      <text
+        x={boatToSvgX(handleTipXRotatedBoatCatch / 2)} // Midpoint between handle tip and pivot
+        y={catchTextYPosition}
+        fontFamily="Inter, system-ui, Arial, sans-serif"
+        fontSize={pixelsToCm(12)}
+        fontWeight={600}
+        fill="#1565c0"
+        stroke="#ffffff"
+        strokeWidth={pixelsToCm(2.4)}
+        paintOrder="stroke"
+        textAnchor="middle"
+      >
+        {`Catch Length: ${Math.abs(horizontalDistanceCatch)} cm`}
+      </text>
 
-            {/* Length Text Catch */}
-            <text
-                x={boatToSvgX(handleTipXRotatedBoatCatch / 2)}
-                y={boatToSvgY(-35)} // Adjust Y position as needed
-                fontFamily="Arial"
-                fontSize={pixelsToCm(12)}
-                fill="blue"
-                textAnchor="middle"
-            >
-                {`Catch Length: ${Math.abs(horizontalDistanceCatch)} cm`}
-            </text>
+      {/* --- Finish Length Lines and Text --- */}
 
-            {/* --- Finish Length Lines and Text --- */}
+      {/* Horizontal line from handle tip to pivot at finish position */}
+      <line
+        x1={boatToSvgX(handleTipXRotatedBoatFinish)}
+        y1={boatToSvgY(0)}
+        x2={boatToSvgX(0)}
+        y2={boatToSvgY(0)}
+        stroke="#ffffff"
+        strokeOpacity={0.85}
+        strokeWidth={pixelsToCm(4)}
+        strokeLinecap="round"
+      />
+      <line
+        x1={boatToSvgX(handleTipXRotatedBoatFinish)}
+        y1={boatToSvgY(0)}
+        x2={boatToSvgX(0)}
+        y2={boatToSvgY(0)}
+        stroke="#2e7d32"
+        strokeWidth={pixelsToCm(2)}
+        strokeLinecap="round"
+      />
 
-            {/* Length Line Finish */}
-            <line
-                x1={boatToSvgX(handleTipXRotatedBoatFinish)}
-                y1={boatToSvgY(0)}
-                x2={boatToSvgX(0)}
-                y2={boatToSvgY(0)}
-                stroke="green"
-                strokeWidth={pixelsToCm(2)}
-            />
+      {/* Vertical dashed line from handle tip to horizontal line at finish position */}
+      <line
+        x1={boatToSvgX(handleTipXRotatedBoatFinish)}
+        y1={boatToSvgY(0)}
+        x2={boatToSvgX(handleTipXRotatedBoatFinish)}
+        y2={boatToSvgY(handleTipYRotatedBoatFinish)}
+        stroke="#7a8893"
+        strokeDasharray={`${pixelsToCm(5)},${pixelsToCm(5)}`}
+      />
 
-            {/* Perpendicular Length Line Finish */}
-            <line
-                x1={boatToSvgX(handleTipXRotatedBoatFinish)}
-                y1={boatToSvgY(0)}
-                x2={boatToSvgX(handleTipXRotatedBoatFinish)}
-                y2={boatToSvgY(handleTipYRotatedBoatFinish)}
-                stroke="black"
-                strokeDasharray={`${pixelsToCm(5)},${pixelsToCm(5)}`}
-            />
+      {/* Label for finish length */}
+      <text
+        x={boatToSvgX(handleTipXRotatedBoatFinish / 2)}
+        y={finishTextYPosition}
+        fontFamily="Inter, system-ui, Arial, sans-serif"
+        fontSize={pixelsToCm(12)}
+        fontWeight={600}
+        fill="#2e7d32"
+        stroke="#ffffff"
+        strokeWidth={pixelsToCm(2.4)}
+        paintOrder="stroke"
+        textAnchor="middle"
+      >
+        {`Finish Length: ${Math.abs(horizontalDistanceFinish)} cm`}
+      </text>
 
-            {/* Length Text Finish */}
-            <text
-                x={boatToSvgX(handleTipXRotatedBoatFinish / 2)}
-                y={boatToSvgY(-50)} 
-                fontFamily="Arial"
-                fontSize={pixelsToCm(12)}
-                fill="green"
-                textAnchor="middle"
-            >
-                {`Finish Length: ${horizontalDistanceFinish} cm`}
-            </text>
-            { /* --- Total Work Distance --- */}
-            <text
-                x={boatToSvgX(0)}
-                y={boatToSvgY(-65)}
-                fontFamily="Arial"
-                fontSize={pixelsToCm(12)}
-                fill="black"
-                textAnchor="middle"
-            >
-                {`Work Distance: ${(Math.abs(horizontalDistanceCatch) + Math.abs(horizontalDistanceFinish)).toFixed(2)} cm`}
-            </text>
-        </>
-    );
+      {/* --- Total Work Distance --- */}
+      <text
+        x={boatToSvgX(0)}
+        y={workTextYPosition}
+        fontFamily="Inter, system-ui, Arial, sans-serif"
+        fontSize={pixelsToCm(12)}
+        fontWeight={600}
+        fill="#2b3138"
+        stroke="#ffffff"
+        strokeWidth={pixelsToCm(2.4)}
+        paintOrder="stroke"
+        textAnchor="middle"
+      >
+        {`Work Distance: ${workDistance.toFixed(2)} cm`}
+      </text>
+    </>
+  );
 };
 
 export default LengthLines;

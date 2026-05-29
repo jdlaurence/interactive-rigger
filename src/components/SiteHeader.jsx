@@ -1,51 +1,25 @@
 // src/components/SiteHeader.jsx
-import React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { styled } from '@mui/material/styles';
+import { Box, Typography } from '@mui/material';
 
-// Styled AppBar with custom colors and border
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  backgroundColor: '#1976d2',
-  color: '#ffffff',
-  boxShadow: 'none',
-  borderBottom: `1px solid ${theme.palette.divider}`,
-}));
-
-// Styled Toolbar to adjust height and center content
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  minHeight: '80px', // Increased height to accommodate additional text
-  display: 'flex',
-  flexDirection: 'column', // Stack items vertically
-  justifyContent: 'center',
-  alignItems: 'center',
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-}));
-
+// Brand block rendered inside the App's toolbar (the AppBar itself lives in App
+// so it can also host the responsive menu button).
 export const SiteHeader = () => {
   return (
-    <StyledAppBar position="fixed" elevation={0}>
-      <StyledToolbar>
-        <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
-          Interactive Rigger
-        </Typography>
-        <Typography
-          variant="subtitle2"
-          component="h2"
-          sx={{ fontWeight: 300, color: 'grey.300', mt: 0.5 }}
-        >
-          Explore rigging adjustments to a sweep rowing shell. Improvements coming soon.
-        </Typography>
-        <Typography
-          variant="caption"
-          component="p"
-          sx={{ fontWeight: 300, color: 'grey.300', mt: 1 }}
-        >
-          © 2024 J.D. Laurence-Chasen. All rights reserved.
-        </Typography>
-      </StyledToolbar>
-    </StyledAppBar>
+    <Box sx={{ minWidth: 0 }}>
+      <Typography variant="h6" component="h1" noWrap sx={{ lineHeight: 1.1 }}>
+        Interactive Rigger
+      </Typography>
+      <Typography
+        variant="caption"
+        component="p"
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+          color: 'rgba(255,255,255,0.78)',
+          lineHeight: 1.2,
+        }}
+      >
+        Visualize &amp; explore sweep rigging — load, length, and angles
+      </Typography>
+    </Box>
   );
 };
