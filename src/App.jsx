@@ -17,7 +17,8 @@ import { SiteHeader } from './components/SiteHeader';
 import {
   processOarAngle,
   computeMetrics,
-  checkRanges,
+  classifyGearing,
+  classifyArc,
   OARLOCK_WIDTH,
   OARLOCK_DEPTH,
 } from './utils';
@@ -31,14 +32,15 @@ function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // **Primary rigging inputs (all measurements in centimeters unless noted)**
+  // Defaults match the High School Boys preset (the club's headline rig).
   const [spread, setSpread] = useState(84); // Hull center-line to oarlock pin
   const [inboard, setInboard] = useState(114); // Handle end to collar (blade side)
-  const [totalLength, setTotalLength] = useState(370); // Full oar length (club-fixed; editable as a club setting)
-  const [catchAngle, setCatchAngle] = useState(60); // Oar angle at the catch (deg)
-  const [finishAngle, setFinishAngle] = useState(-35); // Oar angle at the finish (deg)
+  const [totalLength, setTotalLength] = useState(374); // Full oar length (club-fixed; editable as a club setting)
+  const [catchAngle, setCatchAngle] = useState(58); // Oar angle at the catch (deg)
+  const [finishAngle, setFinishAngle] = useState(-34); // Oar angle at the finish (deg)
 
   // **Coaching context + display options**
-  const [crewType, setCrewType] = useState('hwtMen');
+  const [crewType, setCrewType] = useState('hsBoys');
   const [boatClass, setBoatClass] = useState('eight');
 
   // **Outboard is derived — total length minus inboard.**
@@ -86,21 +88,73 @@ function App() {
     };
   }, [spread, inboard, outboard, catchAngle, finishAngle]);
 
-  // **Recommended ranges for the active crew/boat, and per-field status.**
+  // **Recommended ranges for the active crew/boat (drive the indicator bands).**
   const ranges = useMemo(() => getRanges(crewType, boatClass), [crewType, boatClass]);
-  const rangeStatus = useMemo(
-    () =>
-      checkRanges(
-        {
-          spread,
-          inboard,
-          totalLength: metrics.totalLength,
-          loadRatio: metrics.loadRatio,
-          totalArc: metrics.totalArc,
-        },
-        ranges
-      ),
-    [spread, inboard, metrics, ranges]
+
+  // **Reference rig: the preset for the selected crew/boat. This stays fixed as
+  // the user edits, so the live rig can always be compared against it. The
+  // geometry (catch/finish oar center-lines + pin) is pre-computed here so the
+  // canvas can ghost it, and the metrics drive the reference text + indicators.**
+  const referenceRig = useMemo(() => applyPreset(crewType, boatClass), [crewType, boatClass]);
+  const reference = useMemo(() => {
+    if (!referenceRig) return null;
+    const { spread: rS, inboard: rIn, totalLength: rLen, catchAngle: rC, finishAngle: rF } = referenceRig;
+    const rOut = rLen - rIn;
+    const pc = processOarAngle(0, rS, rIn, OARLOCK_WIDTH, OARLOCK_DEPTH, rC);
+    const pf = processOarAngle(0, rS, rIn, OARLOCK_WIDTH, OARLOCK_DEPTH, rF);
+    // Blade tip in boat space: pin is at (0, spread); blade is `outboard` beyond.
+    const blade = (hx, hy) => {
+      const dx = 0 - hx;
+      const dy = rS - hy;
+      const L = Math.hypot(dx, dy) || 1;
+      return { x: (dx / L) * rOut, y: rS + (dy / L) * rOut };
+    };
+    return {
+      rig: referenceRig,
+      metrics: computeMetrics({
+        spread: rS,
+        inboard: rIn,
+        outboard: rOut,
+        catchAngle: rC,
+        finishAngle: rF,
+        processedCatch: pc,
+        processedFinish: pf,
+      }),
+      pin: { x: 0, y: rS },
+      catch: {
+        handle: { x: pc.handleTipXRotatedBoat, y: pc.handleTipYRotatedBoat },
+        blade: blade(pc.handleTipXRotatedBoat, pc.handleTipYRotatedBoat),
+      },
+      finish: {
+        handle: { x: pf.handleTipXRotatedBoat, y: pf.handleTipYRotatedBoat },
+        blade: blade(pf.handleTipXRotatedBoat, pf.handleTipYRotatedBoat),
+      },
+    };
+  }, [referenceRig]);
+
+  // **Has the live rig been edited away from the reference preset?**
+  const isEdited = useMemo(() => {
+    if (!referenceRig) return false;
+    const eq = (a, b) => Math.abs(a - b) < 1e-3;
+    return !(
+      eq(spread, referenceRig.spread) &&
+      eq(inboard, referenceRig.inboard) &&
+      eq(totalLength, referenceRig.totalLength) &&
+      eq(catchAngle, referenceRig.catchAngle) &&
+      eq(finishAngle, referenceRig.finishAngle)
+    );
+  }, [spread, inboard, totalLength, catchAngle, finishAngle, referenceRig]);
+
+  // **Colour-mapped verdicts: gearing (Light/Balanced/Heavy) + arc (Short/Balanced/Long).
+  // The band is the reference window; the marker is the live rig; the ghost tick
+  // is the reference value.**
+  const gearing = useMemo(
+    () => classifyGearing(metrics.loadRatio, ranges.loadRatio, reference?.metrics.loadRatio),
+    [metrics.loadRatio, ranges.loadRatio, reference]
+  );
+  const arc = useMemo(
+    () => classifyArc(metrics.totalArc, ranges.totalArc, reference?.metrics.totalArc),
+    [metrics.totalArc, ranges.totalArc, reference]
   );
 
   // **Apply a crew/boat preset to all the inputs it controls.**
@@ -114,41 +168,41 @@ function App() {
     setFinishAngle(rig.finishAngle);
   };
 
+  // Selecting a crew or boat loads its preset; editing afterwards keeps the crew
+  // selected (it stays the reference) — the live rig simply diverges from it.
   const handleCrewChange = (newCrew) => {
     setCrewType(newCrew);
-    if (newCrew !== 'custom') applyRig(newCrew, boatClass);
+    applyRig(newCrew, boatClass);
   };
-
   const handleBoatChange = (newBoat) => {
     setBoatClass(newBoat);
-    if (crewType !== 'custom') applyRig(crewType, newBoat);
+    applyRig(crewType, newBoat);
   };
-
-  // **Wrapped setters: a manual edit drops the active preset to "custom".**
-  const editValue = (setter) => (value) => {
-    setter(value);
-    setCrewType('custom');
-  };
+  const handleReset = () => applyRig(crewType, boatClass);
 
   const controls = (
     <ControlPanel
       spread={spread}
-      setSpread={editValue(setSpread)}
+      setSpread={setSpread}
       inboard={inboard}
-      setInboard={editValue(setInboard)}
+      setInboard={setInboard}
       totalLength={totalLength}
-      setTotalLength={editValue(setTotalLength)}
+      setTotalLength={setTotalLength}
       outboard={outboard}
       catchAngle={catchAngle}
-      setCatchAngle={editValue(setCatchAngle)}
+      setCatchAngle={setCatchAngle}
       finishAngle={finishAngle}
-      setFinishAngle={editValue(setFinishAngle)}
+      setFinishAngle={setFinishAngle}
       crewType={crewType}
       onCrewChange={handleCrewChange}
       boatClass={boatClass}
       onBoatChange={handleBoatChange}
       metrics={metrics}
-      rangeStatus={rangeStatus}
+      gearing={gearing}
+      arc={arc}
+      reference={reference}
+      isEdited={isEdited}
+      onReset={handleReset}
     />
   );
 
@@ -246,6 +300,8 @@ function App() {
               pixelsPerCm={pixelsPerCm}
               svgWidthCm={svgWidthCm}
               svgHeightCm={svgHeightCm}
+              showGhost={isEdited}
+              reference={reference}
             />
           </Paper>
 

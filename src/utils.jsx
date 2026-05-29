@@ -82,6 +82,72 @@ export const computeMetrics = ({
     };
 };
 
+// **Three-zone, colour-mapped classifier shared by the rig indicators.**
+// `band` is the active [min, max] "balanced" window. Below it takes the low
+// label, inside it reads "Balanced", above it takes the high label. Returns the
+// verdict, colour, and the track geometry the indicator paints — the green zone
+// of the track is exactly [min, max].
+export const GEARING_COLORS = {
+    light: '#1565c0', // low / blue
+    balanced: '#2e7d32', // in-band / green
+    heavy: '#c62828', // high / red
+};
+
+const LEVEL_COLOR = {
+    low: GEARING_COLORS.light,
+    mid: GEARING_COLORS.balanced,
+    high: GEARING_COLORS.heavy,
+};
+
+export const classifyBand = (value, band, labels, reference) => {
+    const [min, max] = band && band.length === 2 ? band : [0, 1];
+    const lab = labels || { low: 'Low', mid: 'Balanced', high: 'High' };
+
+    let level = 'mid';
+    let label = lab.mid;
+    if (!Number.isFinite(value)) {
+        label = '—';
+    } else if (value < min) {
+        level = 'low';
+        label = lab.low;
+    } else if (value > max) {
+        level = 'high';
+        label = lab.high;
+    }
+
+    // Pad the band on both sides (proportional, so it scales for any metric) so
+    // the green "balanced" zone reads as a band and there is room to show drift.
+    const pad = Math.max((max - min) * 2, 1e-6);
+    const lo = min - pad;
+    const hi = max + pad;
+    const clamp01 = (t) => Math.min(1, Math.max(0, t));
+    const pct = (v) => clamp01((v - lo) / (hi - lo)) * 100;
+
+    return {
+        level,
+        label,
+        color: LEVEL_COLOR[level],
+        value,
+        min,
+        max,
+        // Percentages across the track (0–100) for the gradient + marker.
+        markerPct: Number.isFinite(value) ? pct(value) : 50,
+        bandStartPct: pct(min),
+        bandEndPct: pct(max),
+        // Where the reference (preset) value sits, for the ghost tick.
+        refPct: Number.isFinite(reference) ? pct(reference) : null,
+        reference: Number.isFinite(reference) ? reference : null,
+    };
+};
+
+// Load ratio (outboard ÷ inboard): under-geared → Light, over-geared → Heavy.
+export const classifyGearing = (loadRatio, band, reference) =>
+    classifyBand(loadRatio, band, { low: 'Light', mid: 'Balanced', high: 'Heavy' }, reference);
+
+// Total arc (catch + |finish|): compact stroke → Short, swept out → Long.
+export const classifyArc = (totalArc, band, reference) =>
+    classifyBand(totalArc, band, { low: 'Short', mid: 'Balanced', high: 'Long' }, reference);
+
 // **Compare a set of values against recommended [min, max] ranges.**
 // `values` and `ranges` are keyed objects; only fields present in BOTH are
 // checked. Returns a per-field status object: { field: { status, message } }

@@ -14,9 +14,11 @@ const LengthLines = ({
   boatToSvgY,
 }) => {
 
-    const catchTextYPosition = boatToSvgY(-35);
-    const finishTextYPosition = boatToSvgY(-50);
-    const workTextYPosition = boatToSvgY(-65);
+    // Pushed lower (more negative boat-y → further below the hull on screen) so
+    // the labels clear the boat artwork.
+    const catchTextYPosition = boatToSvgY(-48);
+    const finishTextYPosition = boatToSvgY(-63);
+    const workTextYPosition = boatToSvgY(-78);
     
   return (
     <>

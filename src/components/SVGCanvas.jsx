@@ -33,6 +33,8 @@ const SVGCanvas = ({
   pixelsPerCm,
   svgWidthCm,
   svgHeightCm,
+  showGhost,
+  reference,
 }) => {
   // **Helper functions to convert between pixels and centimeters**
   const pixelsToCm = (pixels) => pixels / pixelsPerCm;
@@ -142,7 +144,17 @@ const SVGCanvas = ({
   const viewBox = `${vbX.toFixed(1)} ${vbY.toFixed(1)} ${vbW.toFixed(1)} ${vbH.toFixed(1)}`;
 
   return (
-    <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
+    <Box
+      sx={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        // Same studio backdrop across the whole container, including the
+        // letterbox margins outside the (aspect-preserved) SVG viewBox.
+        background:
+          'radial-gradient(120% 100% at 50% 38%, #f7f9fb 0%, #eaeef2 60%, #d8dfe6 100%)',
+      }}
+    >
       {/* Legend overlay (decoupled from the dynamic viewBox) */}
       <Box
         sx={{
@@ -159,8 +171,23 @@ const SVGCanvas = ({
           pointerEvents: 'none',
         }}
       >
-        <LegendSwatch color="#1565c0" label="Catch — squared" />
-        <LegendSwatch color="#2e7d32" label="Finish — feathered" />
+        <LegendSwatch color="#1565c0" label="Catch" />
+        <LegendSwatch color="#2e7d32" label="Finish" />
+        {showGhost && reference && (
+          <LegendSwatch
+            color="#9aa3ad"
+            label="Reference"
+            swatch={
+              <Box
+                sx={{
+                  width: 16,
+                  height: 0,
+                  borderTop: '2px dashed #9aa3ad',
+                }}
+              />
+            }
+          />
+        )}
       </Box>
 
       <svg
@@ -172,12 +199,6 @@ const SVGCanvas = ({
         style={{ display: 'block' }}
       >
         <defs>
-          {/* Soft studio backdrop */}
-          <radialGradient id="rg-bg" cx="50%" cy="40%" r="80%">
-            <stop offset="0%" stopColor="#f7f9fb" />
-            <stop offset="60%" stopColor="#eaeef2" />
-            <stop offset="100%" stopColor="#d8dfe6" />
-          </radialGradient>
           {/* Carbon hull body — crown sheen runs across the beam */}
           <linearGradient id="rg-hull" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#1d2125" />
@@ -217,9 +238,6 @@ const SVGCanvas = ({
           </filter>
         </defs>
 
-        {/* Studio backdrop sized to the live viewBox */}
-        <rect x={vbX} y={vbY} width={vbW} height={vbH} fill="url(#rg-bg)" />
-
         {/* Boat artwork (hull + seat + rigger + shoes), anchored at the pin.
             Flip horizontally about the pin if bow/stern come out mirrored. */}
         <g
@@ -243,6 +261,46 @@ const SVGCanvas = ({
           boatToSvgY={boatToSvgY}
           pixelsToCm={pixelsToCm}
         />
+
+        {/* Ghosted reference rig: thin dashed oar center-lines (catch + finish)
+            and a hollow pin marker for the selected crew/boat preset, so an
+            edited rig can be read against where the reference sits. Drawn under
+            the live oars/oarlocks. */}
+        {showGhost && reference && (
+          <g style={{ pointerEvents: 'none' }}>
+            <line
+              x1={boatToSvgX(reference.catch.handle.x)}
+              y1={boatToSvgY(reference.catch.handle.y)}
+              x2={boatToSvgX(reference.catch.blade.x)}
+              y2={boatToSvgY(reference.catch.blade.y)}
+              stroke="#1565c0"
+              strokeWidth={2}
+              strokeDasharray="6 5"
+              strokeLinecap="round"
+              opacity={0.5}
+            />
+            <line
+              x1={boatToSvgX(reference.finish.handle.x)}
+              y1={boatToSvgY(reference.finish.handle.y)}
+              x2={boatToSvgX(reference.finish.blade.x)}
+              y2={boatToSvgY(reference.finish.blade.y)}
+              stroke="#2e7d32"
+              strokeWidth={2}
+              strokeDasharray="6 5"
+              strokeLinecap="round"
+              opacity={0.5}
+            />
+            <circle
+              cx={boatToSvgX(reference.pin.x)}
+              cy={boatToSvgY(reference.pin.y)}
+              r={3.5}
+              fill="#ffffff"
+              stroke="#6b7480"
+              strokeWidth={1.5}
+              opacity={0.8}
+            />
+          </g>
+        )}
 
         {/* Render dynamic length lines and labels */}
         <LengthLines
