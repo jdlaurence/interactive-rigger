@@ -4,7 +4,6 @@ import {
   Box,
   AppBar,
   Toolbar,
-  Drawer,
   IconButton,
   Paper,
   Typography,
@@ -30,7 +29,6 @@ const DRAWER_WIDTH = 344;
 function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [infoOpen, setInfoOpen] = useState(false);
 
   // **Primary rigging inputs (all measurements in centimeters unless noted)**
@@ -215,22 +213,29 @@ function App() {
     />
   );
 
+  const canvas = (
+    <SVGCanvas
+      spread={spread}
+      inboard={inboard}
+      outboard={outboard}
+      catchAngle={catchAngle}
+      finishAngle={finishAngle}
+      processedCatch={processedCatch}
+      processedFinish={processedFinish}
+      metrics={metrics}
+      pixelsPerCm={pixelsPerCm}
+      svgWidthCm={svgWidthCm}
+      svgHeightCm={svgHeightCm}
+      showGhost={isEdited}
+      reference={reference}
+    />
+  );
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       {/* Header */}
       <AppBar position="static" elevation={0} sx={{ zIndex: (t) => t.zIndex.drawer + 1 }}>
         <Toolbar variant="dense" sx={{ gap: 1 }}>
-          {isMobile && (
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open controls"
-              onClick={() => setDrawerOpen(true)}
-              sx={{ fontSize: 22, lineHeight: 1 }}
-            >
-              ☰
-            </IconButton>
-          )}
           <SiteHeader />
           <Box sx={{ flexGrow: 1 }} />
           <IconButton
@@ -247,10 +252,52 @@ function App() {
 
       <InfoDialog open={infoOpen} onClose={() => setInfoOpen(false)} />
 
-      {/* Body: sidebar + main viz */}
-      <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
-        {/* Desktop: permanent sidebar */}
-        {!isMobile && (
+      {/* Body. Desktop: controls in a fixed sidebar beside the viz. Mobile:
+          the viz is pinned to the top of the page and the controls scroll
+          underneath it. */}
+      {isMobile ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+          {/* Viz pinned at the top — fixed height, never scrolls away */}
+          <Box
+            sx={{
+              flexShrink: 0,
+              height: '42vh',
+              p: 1,
+              bgcolor: 'background.default',
+            }}
+          >
+            <Paper
+              elevation={0}
+              sx={{
+                width: '100%',
+                height: '100%',
+                border: 1,
+                borderColor: 'divider',
+                overflow: 'hidden',
+              }}
+            >
+              {canvas}
+            </Paper>
+          </Box>
+
+          {/* Controls below — the scrollable region */}
+          <Box
+            component="aside"
+            sx={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: 'auto',
+              borderTop: 1,
+              borderColor: 'divider',
+              bgcolor: 'background.paper',
+            }}
+          >
+            {controls}
+          </Box>
+        </Box>
+      ) : (
+        <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
+          {/* Desktop: permanent sidebar */}
           <Box
             component="aside"
             sx={{
@@ -265,76 +312,44 @@ function App() {
           >
             {controls}
           </Box>
-        )}
 
-        {/* Mobile: temporary drawer */}
-        {isMobile && (
-          <Drawer
-            anchor="left"
-            open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
-            ModalProps={{ keepMounted: true }}
-            sx={{ '& .MuiDrawer-paper': { width: DRAWER_WIDTH, boxSizing: 'border-box' } }}
-          >
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
-              <IconButton aria-label="close controls" onClick={() => setDrawerOpen(false)}>
-                ✕
-              </IconButton>
-            </Box>
-            {controls}
-          </Drawer>
-        )}
-
-        {/* Main visualization area */}
-        <Box
-          component="main"
-          sx={{
-            flex: 1,
-            minWidth: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: { xs: 1, md: 1.5 },
-            p: { xs: 1, md: 2 },
-            bgcolor: 'background.default',
-            overflow: 'hidden',
-          }}
-        >
-          <Paper
-            elevation={0}
+          {/* Main visualization area */}
+          <Box
+            component="main"
             sx={{
               flex: 1,
-              minHeight: 0,
-              border: 1,
-              borderColor: 'divider',
+              minWidth: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1.5,
+              p: 2,
+              bgcolor: 'background.default',
               overflow: 'hidden',
             }}
           >
-            <SVGCanvas
-              spread={spread}
-              inboard={inboard}
-              outboard={outboard}
-              catchAngle={catchAngle}
-              finishAngle={finishAngle}
-              processedCatch={processedCatch}
-              processedFinish={processedFinish}
-              metrics={metrics}
-              pixelsPerCm={pixelsPerCm}
-              svgWidthCm={svgWidthCm}
-              svgHeightCm={svgHeightCm}
-              showGhost={isEdited}
-              reference={reference}
-            />
-          </Paper>
+            <Paper
+              elevation={0}
+              sx={{
+                flex: 1,
+                minHeight: 0,
+                border: 1,
+                borderColor: 'divider',
+                overflow: 'hidden',
+              }}
+            >
+              {canvas}
+            </Paper>
 
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ textAlign: 'center', display: { xs: 'none', sm: 'block' } }}
-          >
-            © 2026 J.D. Laurence-Chasen. All rights reserved.
-          </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ textAlign: 'center' }}
+            >
+              © 2026 J.D. Laurence-Chasen. All rights reserved.
+            </Typography>
+          </Box>
         </Box>
-      </Box>
+      )}
     </Box>
   );
 }
