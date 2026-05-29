@@ -14,6 +14,7 @@ import {
 import ControlPanel from './components/ControlPanel';
 import SVGCanvas from './components/SVGCanvas';
 import { SiteHeader } from './components/SiteHeader';
+import InfoDialog from './components/InfoDialog';
 import {
   processOarAngle,
   computeMetrics,
@@ -30,6 +31,7 @@ function App() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
 
   // **Primary rigging inputs (all measurements in centimeters unless noted)**
   // Defaults match the High School Boys preset (the club's headline rig).
@@ -223,8 +225,20 @@ function App() {
             </IconButton>
           )}
           <SiteHeader />
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton
+            edge="end"
+            color="inherit"
+            aria-label="about the numbers"
+            onClick={() => setInfoOpen(true)}
+            sx={{ fontSize: 22, lineHeight: 1 }}
+          >
+            ⚙
+          </IconButton>
         </Toolbar>
       </AppBar>
+
+      <InfoDialog open={infoOpen} onClose={() => setInfoOpen(false)} />
 
       {/* Body: sidebar + main viz */}
       <Box sx={{ display: 'flex', flex: 1, minHeight: 0 }}>
