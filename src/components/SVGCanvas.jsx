@@ -70,8 +70,8 @@ const SVGCanvas = ({
   const oarlockDepth = OARLOCK_DEPTH; // Half of oarlock depth
 
   // **Boat artwork (Boat_New.svg) — replaces the hand-drawn hull, seat, rigger,
-  // and shoes. The image is anchored at its rigger pin so it lines up with the
-  // app's pin at (0, spread). FINE-TUNE these four constants:**
+  // and shoes. The image is anchored at its rigger pin. FINE-TUNE these four
+  // constants:**
   const boatImgVBWidth = 123.41502; // Boat_New.svg intrinsic box (Inkscape units)
   const boatImgVBHeight = 96.578728;
   const boatImgScale = 1.48; // cm per image unit (controls overall boat size)
@@ -79,10 +79,17 @@ const SVGCanvas = ({
   const boatPinFracY = 0.006; // where the pin sits down the image (0=top, 1=bottom)
   const boatFlipX = false; // set true if bow/stern end up mirrored
 
+  // **The boat artwork is drawn at a fixed spread (its rigger reaches out to the
+  // pin at this distance). Anchor the image here — NOT at the live `spread` — so
+  // changing the spread slides only the oarlock and oars outward, leaving the
+  // hull fixed in place. At the default spread this is identical to the old
+  // behavior; it only diverges once the spread is edited.**
+  const boatArtSpread = 84;
+
   const boatImgW = boatImgVBWidth * boatImgScale;
   const boatImgH = boatImgVBHeight * boatImgScale;
   const pinSvgX = boatToSvgX(0);
-  const pinSvgY = boatToSvgY(spread);
+  const pinSvgY = boatToSvgY(boatArtSpread);
   const boatImgX = pinSvgX - boatPinFracX * boatImgW;
   const boatImgY = pinSvgY - boatPinFracY * boatImgH;
 
@@ -104,31 +111,40 @@ const SVGCanvas = ({
     collarYBoat: collarYBoatFinish,
   } = processedFinish;
 
-  // **Blade tip (boat space): the oar line runs through the handle tip and the
-  // pin; the blade is `outboard` beyond the pin on the opposite side.**
-  const bladeTip = (handleX, handleY) => {
-    const dx = pivotXBoat - handleX;
-    const dy = pivotYBoat - handleY;
-    const len = Math.hypot(dx, dy) || 1;
-    return {
-      x: pivotXBoat + (dx / len) * outboard,
-      y: pivotYBoat + (dy / len) * outboard,
-    };
-  };
   // **Stable viewBox: frame the boat plus the *plausible* oar arc rather than
   // the live angles, so dragging the catch/finish sliders rotates the oars
-  // without rescaling or shifting the whole diagram. The reference angles
-  // bracket the realistic sweep range; the frame only changes with spread /
-  // length / inboard (typed inputs), not while sliding.**
+  // without rescaling or shifting the whole diagram.**
+  //
+  // The frame uses *stable* rigging dimensions (the reference preset's spread /
+  // inboard / outboard), NOT the live ones. Editing the spread slides the
+  // oarlock/oars relative to the fixed hull, and editing the inboard slides the
+  // handle along the oar axis — neither should move the boat. Framing off the
+  // live values would reframe the whole view and make the hull appear to drift.
+  // The frame only changes on a deliberate crew/boat switch.
+  const framePivotY = reference ? reference.pin.y : spread;
+  const frameInboard = reference ? reference.inboard : inboard;
+  const frameOutboard = reference ? reference.metrics.outboard : outboard;
+
+  // **Blade tip (boat space): the oar line runs through the handle tip and the
+  // pin; the blade is `frameOutboard` beyond the pin on the opposite side.**
+  const bladeTip = (handleX, handleY) => {
+    const dx = pivotXBoat - handleX;
+    const dy = framePivotY - handleY;
+    const len = Math.hypot(dx, dy) || 1;
+    return {
+      x: pivotXBoat + (dx / len) * frameOutboard,
+      y: framePivotY + (dy / len) * frameOutboard,
+    };
+  };
   const FRAME_ANGLES = [40, 78, -10, -48];
   const framePts = [
     { x: hullStartXBoat, y: hullWidth / 2 },
     { x: hullEndXBoat, y: -hullWidth / 2 },
-    { x: pivotXBoat, y: pivotYBoat },
+    { x: pivotXBoat, y: framePivotY },
     { x: 0, y: -85 }, // room for the length labels below the hull
   ];
   FRAME_ANGLES.forEach((a) => {
-    const p = processOarAngle(pivotXBoat, pivotYBoat, inboard, oarlockWidth, oarlockDepth, a);
+    const p = processOarAngle(pivotXBoat, framePivotY, frameInboard, oarlockWidth, oarlockDepth, a);
     const h = { x: p.handleTipXRotatedBoat, y: p.handleTipYRotatedBoat };
     framePts.push(h, bladeTip(h.x, h.y));
   });
@@ -181,8 +197,10 @@ const SVGCanvas = ({
               <Box
                 sx={{
                   width: 16,
-                  height: 0,
-                  borderTop: '2px dashed #9aa3ad',
+                  height: 8,
+                  bgcolor: '#5b6470',
+                  borderRadius: 1,
+                  opacity: 0.3,
                 }}
               />
             }
@@ -262,42 +280,35 @@ const SVGCanvas = ({
           pixelsToCm={pixelsToCm}
         />
 
-        {/* Ghosted reference rig: thin dashed oar center-lines (catch + finish)
-            and a hollow pin marker for the selected crew/boat preset, so an
-            edited rig can be read against where the reference sits. Drawn under
-            the live oars/oarlocks. */}
+        {/* Ghosted reference rig: the actual oar artwork (catch + finish) for the
+            selected crew/boat preset, drawn semi-transparent so an edited rig can
+            be read against where the reference sits. Drawn under the live
+            oars/oarlocks. */}
         {showGhost && reference && (
-          <g style={{ pointerEvents: 'none' }}>
-            <line
-              x1={boatToSvgX(reference.catch.handle.x)}
-              y1={boatToSvgY(reference.catch.handle.y)}
-              x2={boatToSvgX(reference.catch.blade.x)}
-              y2={boatToSvgY(reference.catch.blade.y)}
-              stroke="#1565c0"
-              strokeWidth={2}
-              strokeDasharray="6 5"
-              strokeLinecap="round"
-              opacity={0.5}
+          <g style={{ pointerEvents: 'none' }} opacity={0.3}>
+            <Oar
+              oarImage={oarFeatheredImage}
+              collarImage={collarImage}
+              collarXBoat={reference.finish.collar.x}
+              collarYBoat={reference.finish.collar.y}
+              oarImageWidth={oarImageWidth}
+              oarImageHeight={oarImageHeight}
+              oarAngle={reference.finish.angle}
+              boatToSvgX={boatToSvgX}
+              boatToSvgY={boatToSvgY}
+              inboard={reference.inboard}
             />
-            <line
-              x1={boatToSvgX(reference.finish.handle.x)}
-              y1={boatToSvgY(reference.finish.handle.y)}
-              x2={boatToSvgX(reference.finish.blade.x)}
-              y2={boatToSvgY(reference.finish.blade.y)}
-              stroke="#2e7d32"
-              strokeWidth={2}
-              strokeDasharray="6 5"
-              strokeLinecap="round"
-              opacity={0.5}
-            />
-            <circle
-              cx={boatToSvgX(reference.pin.x)}
-              cy={boatToSvgY(reference.pin.y)}
-              r={3.5}
-              fill="#ffffff"
-              stroke="#6b7480"
-              strokeWidth={1.5}
-              opacity={0.8}
+            <Oar
+              oarImage={oarImage}
+              collarImage={collarImage}
+              collarXBoat={reference.catch.collar.x}
+              collarYBoat={reference.catch.collar.y}
+              oarImageWidth={oarImageWidth}
+              oarImageHeight={oarImageHeight}
+              oarAngle={reference.catch.angle}
+              boatToSvgX={boatToSvgX}
+              boatToSvgY={boatToSvgY}
+              inboard={reference.inboard}
             />
           </g>
         )}

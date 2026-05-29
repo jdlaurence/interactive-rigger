@@ -122,12 +122,19 @@ function App() {
         processedCatch: pc,
         processedFinish: pf,
       }),
+      // Enough to re-draw the reference oar artwork as a ghost: collar anchor +
+      // angle for each oar, plus the inboard the artwork is positioned against.
+      inboard: rIn,
       pin: { x: 0, y: rS },
       catch: {
+        angle: rC,
+        collar: { x: pc.collarXBoat, y: pc.collarYBoat },
         handle: { x: pc.handleTipXRotatedBoat, y: pc.handleTipYRotatedBoat },
         blade: blade(pc.handleTipXRotatedBoat, pc.handleTipYRotatedBoat),
       },
       finish: {
+        angle: rF,
+        collar: { x: pf.collarXBoat, y: pf.collarYBoat },
         handle: { x: pf.handleTipXRotatedBoat, y: pf.handleTipYRotatedBoat },
         blade: blade(pf.handleTipXRotatedBoat, pf.handleTipYRotatedBoat),
       },
